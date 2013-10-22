@@ -71,7 +71,7 @@ module axi_lite_slave #
    input wire ARESETN,
 
    // Slave Interface Write Address Ports
-   input  wire [C_S_AXI_ADDR_WIDTH-1:0]   S_AXI_AWADDR,
+   input  wire [C_S_AXI_ADDR_WIDTH-1:0] S_AXI_AWADDR,
    input  wire [3-1:0]                  S_AXI_AWPROT,
    input  wire                          S_AXI_AWVALID,
    output wire                          S_AXI_AWREADY,
@@ -101,75 +101,130 @@ module axi_lite_slave #
    
   );
 
-reg [31:0] read_address ;
-reg	   arready ;
-reg [1:0]   rresp;
-reg	    rvalid;
-reg [31:0] rdata;
+    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg0;
+    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg1;
+    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg2;
+    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg3;
+    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg0_addr = C_S_AXI_BASE_ADDR;
+    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg1_addr = C_S_AXI_BASE_ADDR + 4;
+    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg2_addr = C_S_AXI_BASE_ADDR + 8;
+    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg3_addr = C_S_AXI_BASE_ADDR + 12;
+	reg [31:0] read_address ;
+	reg	   arready ;
+	reg [1:0]   rresp;
+	reg	    rvalid;
+	reg [31:0] rdata;
 
-assign S_AXI_ARREADY = arready ;
-assign S_AXI_RRESP = rresp;
-assign S_AXI_RVALID = rvalid;
-assign S_AXI_RDATA = rdata;
-//Write Address channel
-always @ (posedge ACLK)
-begin
+	//reg [31:0] write_address = S_AXI_AWADDR ;
+	reg	   awready ;
+	reg [1:0]   bresp;
+	//reg	    wvalid;
+	//reg [31:0] wdata =  S_AXI_WDATA;;
+	reg  wready;
+	reg  bvalid;
+	//reg  arvalid;
+	assign S_AXI_AWREADY = awready ;
+	assign S_AXI_ARREADY = arready ;
+	assign S_AXI_RRESP = rresp;
+	assign S_AXI_RVALID = rvalid;
+	assign S_AXI_RDATA = rdata;
+	assign S_AXI_WREADY = wready;
+	assign S_AXI_BVALID = bvalid;
+	//assign S_AXI_ARVALID = arvalid;
 
-	if(ARESETN == 1'b0)
-	begin
-	
-	end
-	else
-	begin
-	
-	end
-end
-//Write Data Channel
-always @ (posedge ACLK)
-begin
+	assign S_AXI_BRESP = bresp;
+	//assign S_AXI_WVALID = wvalid;
 
-	if(ARESETN == 1'b0)
+	//Write Address channel
+	always @ (posedge ACLK)
 	begin
-	
-	end
-	else
-	begin
-	
-	end
-end
-//Write Response Channel
-always @ (posedge ACLK)
-begin
 
-	if(ARESETN == 1'b0)
-	begin
-	
+	  if (ARESETN == 1'b0)
+	  begin
+		awready <= 1'b1;
+		//write_address 	<= write_address;
+	  end
+	  else if(S_AXI_AWVALID==1'b1)
+	  begin
+	  if(( C_S_AXI_BASE_ADDR >  S_AXI_AWADDR > C_S_AXI_HIGH_ADDR ))
+		begin
+		awready <= 1'b0;
+		//write_address 	<= S_AXI_AWADDR;
+		end
+		else
+		begin
+		awready <= 1'b1;
+		//write_address 	<= write_address;
+		end
+
+	  end
 	end
-	else
+	//Write Data Channel
+	always @ (posedge ACLK)
 	begin
-	
+
+	  if (ARESETN == 1'b0)
+		begin
+		wready <= 1'b0;
+		bresp <= 2'b00; //OKAY
+		bvalid <= 1'b0;
+		end
+	  else if(S_AXI_WVALID==1'b1 && S_AXI_BREADY == 1'b1)
+	  begin
+		if(( C_S_AXI_BASE_ADDR >  S_AXI_AWADDR > C_S_AXI_HIGH_ADDR ))
+		begin
+		case ( S_AXI_AWADDR)
+		slv_reg0_addr:
+		slv_reg0 <=  S_AXI_WDATA;
+		slv_reg1_addr:
+		slv_reg1 <=  S_AXI_WDATA;
+		slv_reg2_addr:
+		slv_reg2 <=  S_AXI_WDATA;
+		slv_reg3_addr:
+		slv_reg3 <=  S_AXI_WDATA;
+		default
+		begin
+		bresp <= 2'b11; //SLAVE ERROR(SLVERR)
+		end
+		endcase
+				wready <= 1'b1;
+		bresp <= 2'b00; //OKAY
+		bvalid <= 1'b1;
+		end
+		else
+		begin
+		wready <= 1'b0;
+		bresp <= 2'b00; //OKAY
+		bvalid <= 1'b0;
+		end
+	  end
+	  else
+	  begin
+	  wready <= 1'b0;
+	  bresp <= 2'b00; //OKAY
+	  bvalid <= 1'b0;
+	  end
 	end
-end
-//Read Address Channel
-always @ (posedge ACLK)
-begin
-	if(S_AXI_ARVALID== 1'b1)
- 	begin
-	 	read_address 	<= S_AXI_ARADDR;
-		arready  	<= 1'b0 ;
-	end
-	else
+	//Read Address Channel
+	always @ (posedge ACLK)
 	begin
-	 	read_address <= read_address ;
-		arready  	<= 1'b1 ;
+		if(S_AXI_ARVALID== 1'b1)
+		begin
+			read_address 	<= S_AXI_ARADDR;
+			arready  	<= 1'b0 ;
+		end
+		else
+		begin
+			read_address <= read_address ;
+			arready  	<= 1'b1 ;
+		end
+		
 	end
-	
-end
-//Read Data Channel
-always @ (posedge ACLK)
-begin
-	if(S_AXI_RREADY == 1'b1)
+	//Read Data Channel
+	always @ (posedge ACLK)
 	begin
+	  if(S_AXI_RREADY == 1'b1 && S_AXI_ARPROT==3'b000)
+	  begin
 		if(( C_S_AXI_BASE_ADDR > read_address > C_S_AXI_HIGH_ADDR ))
 		begin
 		rvalid <= 1'b1;
@@ -180,23 +235,27 @@ begin
 		rvalid <= 1'b0;
 		rresp <= 2'b00; //OKAY
 		end
-		
-		case (read_address[15:0]) 
-		16'h00: 
-	 	begin
-		rdata<= 32'hDEAD_BEE1; 
-		end
+
+		case (read_address)
+		slv_reg0_addr:
+		rdata <= slv_reg0;
+		slv_reg1_addr:
+		rdata <= slv_reg1;
+		slv_reg2_addr:
+		rdata <= slv_reg2;
+		slv_reg3_addr:
+		rdata <= slv_reg3;
 		default
 		begin
-		rdata <= 32'hAAAA_BBBB; 
+		rdata <= 32'hAAAA_BBBB;
 		end
 		endcase
-	end
-	else
-	begin
+	  end
+	  else
+	  begin
 		rvalid <= 1'b0;
 		rresp <= 2'b00; //OKAY
+	  end
 	end
-end
 
 endmodule
