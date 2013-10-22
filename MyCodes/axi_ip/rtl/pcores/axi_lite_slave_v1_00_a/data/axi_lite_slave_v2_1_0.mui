@@ -84,59 +84,18 @@
 		<tip></tip>
 	</widget>
 	'>
-	<!ENTITY C_S_AXI_RNG00_BASEADDR '
-	<widget id="C_S_AXI_RNG00_BASEADDR">
-		<key>C_S_AXI_RNG00_BASEADDR</key>
-		<label>Slave AXI RNG00 Base Address </label>
+    
+    <!ENTITY C_BASEADDR '
+	<widget id="C_BASEADDR">
+		<key>C_BASEADDR</key>
+		<label>Slave Base Address </label>
 		<tip></tip>
 	</widget>
 	'>
-	<!ENTITY C_S_AXI_RNG00_HIGHADDR '
-	<widget id="C_S_AXI_RNG00_HIGHADDR">
-		<key>C_S_AXI_RNG00_HIGHADDR</key>
-		<label>Slave AXI RNG00 High Address </label>
-		<tip></tip>
-	</widget>
-	'>
-	<!ENTITY C_S_AXI_RNG01_BASEADDR '
-	<widget id="C_S_AXI_RNG01_BASEADDR">
-		<key>C_S_AXI_RNG01_BASEADDR</key>
-		<label>Slave AXI RNG01 Base Address </label>
-		<tip></tip>
-	</widget>
-	'>
-	<!ENTITY C_S_AXI_RNG01_HIGHADDR '
-	<widget id="C_S_AXI_RNG01_HIGHADDR">
-		<key>C_S_AXI_RNG01_HIGHADDR</key>
-		<label>Slave AXI RNG01 High Address </label>
-		<tip></tip>
-	</widget>
-	'>
-	<!ENTITY C_S_AXI_RNG02_BASEADDR '
-	<widget id="C_S_AXI_RNG02_BASEADDR">
-		<key>C_S_AXI_RNG02_BASEADDR</key>
-		<label>Slave AXI RNG02 Base Address </label>
-		<tip></tip>
-	</widget>
-	'>
-	<!ENTITY C_S_AXI_RNG02_HIGHADDR '
-	<widget id="C_S_AXI_RNG02_HIGHADDR">
-		<key>C_S_AXI_RNG02_HIGHADDR</key>
-		<label>Slave AXI RNG02 High Address </label>
-		<tip></tip>
-	</widget>
-	'>
-	<!ENTITY C_S_AXI_RNG03_BASEADDR '
-	<widget id="C_S_AXI_RNG03_BASEADDR">
-		<key>C_S_AXI_RNG03_BASEADDR</key>
-		<label>Slave AXI RNG03 Base Address </label>
-		<tip></tip>
-	</widget>
-	'>
-	<!ENTITY C_S_AXI_RNG03_HIGHADDR '
-	<widget id="C_S_AXI_RNG03_HIGHADDR">
-		<key>C_S_AXI_RNG03_HIGHADDR</key>
-		<label>Slave AXI RNG03 High Address </label>
+	<!ENTITY C_HIGHADDR '
+	<widget id="C_HIGHADDR">
+		<key>C_HIGHADDR</key>
+		<label>Slave High Address </label>
 		<tip></tip>
 	</widget>
 	'>
@@ -147,26 +106,18 @@
 		<display>User</display>
 		<group id="Common">
 			<display>Common</display>
-			<item>&C_USE_ADVANCED_PORTS;</item>
 		</group>
 	</view>
 	<view id="System">
 		<display>System</display>
         <group id="Addresses">
 	        <display>Addresses</display>
-            <item>&C_S_AXI_NUM_ADDR_RANGES;</item>	
-            <item>&C_S_AXI_RNG00_BASEADDR;</item>
-			<item>&C_S_AXI_RNG00_HIGHADDR;</item>
-			<item>&C_S_AXI_RNG01_BASEADDR;</item>
-			<item>&C_S_AXI_RNG01_HIGHADDR;</item>
-			<item>&C_S_AXI_RNG02_BASEADDR;</item>
-			<item>&C_S_AXI_RNG02_HIGHADDR;</item>
-			<item>&C_S_AXI_RNG03_BASEADDR;</item>
-			<item>&C_S_AXI_RNG03_HIGHADDR;</item>		
+            <item>&C_BASEADDR;</item>
+			<item>&C_HIGHADDR;</item>	
         </group>
 		<group id="S_AXI">
 			<display>S_AXI</display>
-            		<item>&C_S_AXI_PROTOCOL;</item>
+            <item>&C_S_AXI_PROTOCOL;</item>
 			<item>&C_S_AXI_ADDR_WIDTH;</item>
 			<item>&C_S_AXI_DATA_WIDTH;</item>
 			<item>&C_S_AXI_SUPPORTS_READ;</item>

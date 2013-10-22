@@ -16,8 +16,8 @@
 
 module axi_lite_slave #
   (
-   parameter integer C_S_AXI_BASE_ADDR            = 32'h0000_0000,
-   parameter integer C_S_AXI_HIGH_ADDR            = 32'h0000_FFFF,
+   parameter integer C_BASEADDR            = 32'h0000_0000,
+   parameter integer C_HIGHADDR            = 32'h0000_FFFF,
    parameter integer C_S_AXI_ADDR_WIDTH            = 32,
    parameter integer C_S_AXI_DATA_WIDTH            = 32
    )
@@ -61,10 +61,10 @@ module axi_lite_slave #
     reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg1;
     reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg2;
     reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg3;
-    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg0_addr = C_S_AXI_BASE_ADDR;
-    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg1_addr = C_S_AXI_BASE_ADDR + 4;
-    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg2_addr = C_S_AXI_BASE_ADDR + 8;
-    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg3_addr = C_S_AXI_BASE_ADDR + 12;
+    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg0_addr = C_BASEADDR;
+    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg1_addr = C_BASEADDR + 4;
+    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg2_addr = C_BASEADDR + 8;
+    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg3_addr = C_BASEADDR + 12;
 	reg [31:0] read_address ;
 	reg	   arready ;
 	reg [1:0]   rresp;
@@ -102,7 +102,7 @@ module axi_lite_slave #
 	  end
 	  else if(S_AXI_AWVALID==1'b1)
 	  begin
-	  if(( C_S_AXI_BASE_ADDR >  S_AXI_AWADDR > C_S_AXI_HIGH_ADDR ))
+	  if(( C_BASEADDR >  S_AXI_AWADDR > C_HIGHADDR ))
 		begin
 		awready <= 1'b0;
 		//write_address 	<= S_AXI_AWADDR;
@@ -127,7 +127,7 @@ module axi_lite_slave #
 		end
 	  else if(S_AXI_WVALID==1'b1 && S_AXI_BREADY == 1'b1)
 	  begin
-		if(( C_S_AXI_BASE_ADDR <=  S_AXI_AWADDR <= C_S_AXI_HIGH_ADDR ))
+		if(( C_BASEADDR <=  S_AXI_AWADDR <= C_HIGHADDR ))
 		begin
     		case ( S_AXI_AWADDR)
     		slv_reg0_addr:
@@ -182,7 +182,7 @@ module axi_lite_slave #
 	begin
 	  if(S_AXI_RREADY == 1'b1 && S_AXI_ARPROT==3'b000)
 	  begin
-		if(( C_S_AXI_BASE_ADDR <= read_address <= C_S_AXI_HIGH_ADDR ))
+		if(( C_BASEADDR <= read_address <= C_HIGHADDR ))
 		begin
 		rvalid <= 1'b1;
 		rresp <= 2'b00; //OKAY
