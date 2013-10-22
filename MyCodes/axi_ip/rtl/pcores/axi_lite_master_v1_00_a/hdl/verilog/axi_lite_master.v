@@ -41,8 +41,8 @@ module axi_lite_master #
    (
     parameter integer C_M_AXI_ADDR_WIDTH = 32,
     parameter integer C_M_AXI_DATA_WIDTH = 32,
-  parameter C_NUM_COMMANDS = 16,
-  parameter READ_WRITE_ADDR = 32'h88000000
+    parameter C_NUM_COMMANDS = 16,
+    parameter READ_WRITE_ADDR = 32'h88000000
     )
    (
     // System Signals

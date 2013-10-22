@@ -2,7 +2,14 @@
 
 module tb_axi_lite ();
 
+// TEST PARAMS
+parameter NO_REG_READ_WRITE = 8;
+parameter ADDR_WIDTH = 32;
+parameter DATA_WIDTH = 32;
+parameter SLAVE_BASE_ADDR = 32'h88000000 ;
+parameter SLAVE_HIGH_ADDR = 32'h880001FF ;
 
+//SIGNALS & WIRES
 reg     	M_AXI_ACLK ;
 reg      M_AXI_ARESETN ;
 
@@ -41,10 +48,10 @@ reg          start_input_gpio ;
 
 axi_lite_master #
    (
-     .C_M_AXI_ADDR_WIDTH (32),
-     .C_M_AXI_DATA_WIDTH (32),
-     .C_NUM_COMMANDS     (16),
-     .READ_WRITE_ADDR    (32'h88000000)
+     .C_M_AXI_ADDR_WIDTH (ADDR_WIDTH),
+     .C_M_AXI_DATA_WIDTH (DATA_WIDTH),
+     .C_NUM_COMMANDS     (NO_REG_READ_WRITE),
+     .READ_WRITE_ADDR    (SLAVE_BASE_ADDR)
     )
     MASTER
    (
@@ -99,14 +106,14 @@ axi_lite_master #
     .test_rvalid   ()
     );
 
-axi_lite_final #
+axi_lite_slave #
   (
-   .C_BASEADDR         (32'h88000000),
-   .C_HIGHADDR         (32'h880001FF),
-   .C_S_AXI_MIN_SIZE   (32'h000001ff),
-   .C_S_AXI_ADDR_WIDTH (32),
-   .C_S_AXI_DATA_WIDTH (32),
-   .C_NUM_REG          (4)
+   .C_S_AXI_BASE_ADDR         (SLAVE_BASE_ADDR),
+   .C_S_AXI_HIGH_ADDR         (SLAVE_HIGH_ADDR),
+  // .C_S_AXI_MIN_SIZE   (32'h000001ff),
+   .C_S_AXI_ADDR_WIDTH (ADDR_WIDTH),
+   .C_S_AXI_DATA_WIDTH (DATA_WIDTH)
+ //  .C_NUM_REG          (4)
    )
    SLAVE
   (
@@ -143,6 +150,13 @@ axi_lite_final #
    .S_AXI_RREADY    (M_AXI_RREADY)
   );
 
+  initial
+  begin
+  $dumpfile("mydump.vcd");
+  $dumpvars;//(0,tb_axi_lite);
+  $dumpon ;//Enable val change dumping
+  //$dumpoff Disable val change dumping
+  end
 
  initial
   begin
