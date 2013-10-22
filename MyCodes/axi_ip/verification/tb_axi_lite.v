@@ -108,8 +108,8 @@ axi_lite_master #
 
 axi_lite_slave #
   (
-   .C_S_AXI_BASE_ADDR         (SLAVE_BASE_ADDR),
-   .C_S_AXI_HIGH_ADDR         (SLAVE_HIGH_ADDR),
+   .C_BASEADDR         (SLAVE_BASE_ADDR),
+   .C_HIGHADDR         (SLAVE_HIGH_ADDR),
   // .C_S_AXI_MIN_SIZE   (32'h000001ff),
    .C_S_AXI_ADDR_WIDTH (ADDR_WIDTH),
    .C_S_AXI_DATA_WIDTH (DATA_WIDTH)
