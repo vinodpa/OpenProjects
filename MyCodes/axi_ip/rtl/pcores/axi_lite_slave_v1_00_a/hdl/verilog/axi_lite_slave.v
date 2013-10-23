@@ -57,162 +57,177 @@ module axi_lite_slave #
 
   );
 
-    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg0;
-    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg1;
-    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg2;
-    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg3;
-    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg0_addr = C_BASEADDR;
-    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg1_addr = C_BASEADDR + 4;
-    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg2_addr = C_BASEADDR + 8;
-    reg        [C_S_AXI_DATA_WIDTH-1 : 0]           slv_reg3_addr = C_BASEADDR + 12;
-	reg [31:0] read_address ;
-	reg	   arready ;
-	reg [1:0]   rresp;
-	reg	    rvalid;
-	reg [31:0] rdata;
+// Integrate Avalon Slave with Design
+parameter   IDLE    = 2'b00    ;
+parameter   DELAY    = 2'b01    ;
+parameter   READ    = 2'b10    ;
+parameter   WRITE   = 2'b11    ;
+//Avalon Interface designs
+wire [31:0]      address;
+wire             chip_sel ;
+wire [3:0]       byte_enable = S_AXI_WSTRB;
 
-	//reg [31:0] write_address = S_AXI_AWADDR ;
-	reg	   awready ;
-	reg [1:0]   bresp;
-	//reg	    wvalid;
-	//reg [31:0] wdata =  S_AXI_WDATA;;
-	reg  wready;
-	reg  bvalid;
-	//reg  arvalid;
-	assign S_AXI_AWREADY = awready ;
-	assign S_AXI_ARREADY = arready ;
-	assign S_AXI_RRESP = rresp;
-	assign S_AXI_RVALID = rvalid;
-	assign S_AXI_RDATA = rdata;
-	assign S_AXI_WREADY = wready;
-	assign S_AXI_BVALID = bvalid;
-	//assign S_AXI_ARVALID = arvalid;
+reg [1:0]       pState  ;
+reg [1:0]       nState  ;
 
-	assign S_AXI_BRESP = bresp;
-	//assign S_AXI_WVALID = wvalid;
+reg             pBvalid     ;
+reg             pAwready    ;
+reg             pArready    ;
+reg             pWready     ;
+reg             pRvalid     ;
 
-	//Write Address channel
-	always @ (posedge ACLK)
-	begin
+reg             nBvalid     ;
+reg             nAwready    ;
+reg             nArready    ;
+reg             nWready     ;
+reg             nRvalid     ;
 
-	  if (ARESETN == 1'b0)
-	  begin
-		awready <= 1'b1;
-		//write_address 	<= write_address;
-	  end
-	  else if(S_AXI_AWVALID==1'b1)
-	  begin
-	  if(( C_BASEADDR >  S_AXI_AWADDR > C_HIGHADDR ))
-		begin
-		awready <= 1'b0;
-		//write_address 	<= S_AXI_AWADDR;
-		end
-		else
-		begin
-		awready <= 1'b1;
-		//write_address 	<= write_address;
-		end
+assign chip_sel = (C_BASEADDR <=  S_AXI_AWADDR <= C_HIGHADDR) ? 1'b1 :
+                  (C_BASEADDR <=  S_AXI_ARADDR <= C_HIGHADDR) ? 1'b1: 1'b0;
 
-	  end
-	end
-	//Write Data Channel
-	always @ (posedge ACLK)
-	begin
+//TODO: Mux Addresss
 
-	  if (ARESETN == 1'b0)
-		begin
-		wready <= 1'b0;
-		bresp <= 2'b00; //OKAY
-		bvalid <= 1'b0;
-		end
-	  else if(S_AXI_WVALID==1'b1 && S_AXI_BREADY == 1'b1)
-	  begin
-		if(( C_BASEADDR <=  S_AXI_AWADDR <= C_HIGHADDR ))
-		begin
-    		case ( S_AXI_AWADDR)
-    		slv_reg0_addr:
-    		slv_reg0 <=  S_AXI_WDATA;
-    		slv_reg1_addr:
-    		slv_reg1 <=  S_AXI_WDATA;
-    		slv_reg2_addr:
-    		slv_reg2 <=  S_AXI_WDATA;
-    		slv_reg3_addr:
-    		slv_reg3 <=  S_AXI_WDATA;
-    		default
-    		begin
-    		bresp <= 2'b11; //SLAVE ERROR(SLVERR)
-    		end
-    		endcase
+assign  address =  (chip_sel & S_AXI_ARVALID ) ? S_AXI_ARADDR :
+                   (chip_sel & S_AXI_AWVALID ) ? S_AXI_AWADDR : 32'hZ ;
 
-		wready <= 1'b1;
-		bresp <= 2'b00; //OKAY
-		bvalid <= 1'b1;
-		end
-		else
-		begin
-		wready <= 1'b0;
-		bresp <= 2'b00; //OKAY
-		bvalid <= 1'b0;
-		end
-	  end
-	  else
-	  begin
-	  wready <= 1'b0;
-	  bresp <= 2'b00; //OKAY
-	  bvalid <= 1'b0;
-	  end
-	end
-	//Read Address Channel
-	always @ (posedge ACLK)
-	begin
-		if(S_AXI_ARVALID== 1'b1)
-		begin
-			read_address 	<= S_AXI_ARADDR;
-			arready  	<= 1'b0 ;
-		end
-		else
-		begin
-			read_address <= read_address ;
-			arready  	<= 1'b1 ;
-		end
+//TODO: Byte Enable : Axi Lite supports all data accesses use the full width of the data bus
+//                   — AXI4-Lite supports a data bus width of 32-bit or 64-bit. SPEC B1- Definition of AXI Lite
+//Supports 4byte read/write
 
-	end
-	//Read Data Channel
-	always @ (posedge ACLK)
-	begin
-	  if(S_AXI_RREADY == 1'b1 && S_AXI_ARPROT==3'b000)
-	  begin
-		if(( C_BASEADDR <= read_address <= C_HIGHADDR ))
-		begin
-		rvalid <= 1'b1;
-		rresp <= 2'b00; //OKAY
-		end
-		else
-		begin
-		rvalid <= 1'b0;
-		rresp <= 2'b00; //OKAY
-		end
+assign S_AXI_BVALID     =   pBvalid     ;
+assign S_AXI_AWREADY    =   pAwready    ;
+assign S_AXI_ARREADY    =   pArready    ;
+assign S_AXI_WREADY     =   pWready     ;
+assign S_AXI_RVALID     =   pRvalid     ;
+assign S_AXI_BRESP      =   2'b00       ;   //always OK;)
+assign S_AXI_RRESP      =   2'b00       ;   //always ok;)
 
-		case (read_address)
-		slv_reg0_addr:
-		rdata <= slv_reg0;
-		slv_reg1_addr:
-		rdata <= slv_reg1;
-		slv_reg2_addr:
-		rdata <= slv_reg2;
-		slv_reg3_addr:
-		rdata <= slv_reg3;
-		default
-		begin
-		rdata <= 32'hAAAA_BBBB;
-		end
-		endcase
-	  end
-	  else
-	  begin
-		rvalid <= 1'b0;
-		rresp <= 2'b00; //OKAY
-	  end
-	end
+
+//AXI Write/Read Data Control signls FSM
+
+//Registerd Logic for FSM
+always @ (posedge ACLK)
+begin
+    if( ARESETN == 1'b0 )
+    begin
+        pState     <= IDLE ;
+        pBvalid    <= 1'b0 ;
+        pAwready   <= 1'b0 ;
+        pArready   <= 1'b0 ;
+        pWready    <= 1'b0 ;
+        pRvalid    <= 1'b0 ;
+    end
+    else
+    begin
+        pState     <= nState ;
+        pBvalid    <= nBvalid;
+        pAwready   <= nAwready ;
+        pArready   <= nArready ;
+        pWready    <= nWready ;
+        pRvalid    <= nRvalid ;
+    end
+end
+
+
+//Step1: Wait for Address Valid --> Go to Read/Write (Step 2 or 3)
+//Step2: Wait for ReadReady --> ReadValid & ReadAddressReady assert
+//Step3: Wait for Wdata Valis --> Assert Wready & Awready & Bvalid with Bresp
+
+//Combinational Logic for FSM
+always @ (*)
+begin
+
+    case (pState)
+        IDLE :
+            begin
+             nBvalid    <= 1'b0 ;
+             nAwready   <= 1'b0 ;
+             nArready   <= 1'b0 ;
+             nWready    <= 1'b0 ;
+             nRvalid    <= 1'b0 ;
+
+             if(chip_sel == 1'b1 )
+             begin
+                if(S_AXI_AWVALID)
+                nState <= WRITE ;
+                else if (S_AXI_ARVALID)
+                nState  <= READ ;
+                else
+                nState  <= IDLE ;
+             end
+             else
+                nState <= IDLE ;
+            end
+        DELAY :
+            begin
+                nBvalid    <= 1'b0 ;
+                nAwready   <= 1'b0 ;
+                nArready   <= 1'b0 ;
+                nWready    <= 1'b0 ;
+                nRvalid    <= 1'b0 ;
+                nState <= IDLE ;
+            end
+        READ :
+            begin
+             nBvalid    <= 1'b0 ;
+             nAwready   <= 1'b0 ;
+             nWready    <= 1'b0 ;
+
+             if( S_AXI_RREADY == 1'b1 )
+             begin
+             nArready   <= 1'b1 ;
+             nRvalid    <= 1'b1 ;
+             nState     <= DELAY ;
+             end
+             else
+             begin
+             nArready   <= 1'b0 ;
+             nRvalid    <= 1'b0 ;
+             nState     <= READ ;
+             end
+            end
+        WRITE:
+            begin
+             nArready   <= 1'b0 ;
+             nRvalid    <= 1'b0 ;
+
+             if(S_AXI_WVALID == 1'b1 )
+             begin
+                nAwready   <= 1'b1 ;
+                nBvalid    <= 1'b1 ; //TODO: Handle Response Independently
+                nWready    <= 1'b1 ;
+                nState     <= DELAY ;
+             end
+             else
+             begin
+                nAwready   <= 1'b0 ;
+                nBvalid    <= 1'b0 ; //TODO: Handle Response Independently
+                nWready    <= 1'b0 ;
+                nState     <= WRITE ;
+             end
+            end
+    endcase
+
+end
+
+avalon_slave #
+    (
+    //TODO: add Parameters Here
+    .BASEADDRESS        (32'h0000_0000),
+    .ADD_DATA_WIDTH     (32)
+    )
+    AVALON_SLAVE
+    (
+     .iClk                  (   ACLK    ),
+     .nReset                (   ARESETN ),
+     .avs_pcp_address       (   address [10:0]) ,
+     .avs_pcp_byteenable    (   byte_enable),
+     .avs_pcp_read          (   S_AXI_RREADY    ),
+     .avs_pcp_readdata      (   S_AXI_RDATA     ), //TODO:Check Direct Assign is fine or not
+     .avs_pcp_write         (   S_AXI_WVALID    ),
+     .avs_pcp_writedata     (   S_AXI_WDATA     ), //TODO:Check Direct Assign is fine or not
+     .avs_pcp_waitrequest   () //TODO: No need of wait request ?
+    );
+
 
 endmodule
