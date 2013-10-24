@@ -56,210 +56,75 @@ end axi_lite_slave;
 
 architecture implementation of axi_lite_slave is
 
---component avalon_slave
---   port
---		(
---          iClk                  :   in  std_logic                       ;
---          nReset                :   in  std_logic                       ;
---          avs_pcp_address       :   in  std_logic_vector(10 downto 0)   ;
---          avs_pcp_byteenable    :   in  std_logic_vector(3 downto 0)    ;
---          avs_pcp_read          :   in  std_logic                       ;
---          avs_pcp_readdata      :   out std_logic_vector(31 downto 0)   ;
---          avs_pcp_write         :   in  std_logic                       ;
---          avs_pcp_writedata     :   in  std_logic_vector(31 downto 0)   ;
---          avs_pcp_waitrequest   :   out std_logic
---		);
---end component;
-
-type state is (sIDLE,sDELAY,sREAD,sWRITE) ;
-
---constant IDLE   : std_logic_vector(1 downto 0) := "00";
---constant DELAY  : std_logic_vector(1 downto 0) := "01";
---constant READD  : std_logic_vector(1 downto 0) := "10";
---constant WRITEE : std_logic_vector(1 downto 0) := "11";
-
---Avalon Interface designs
-signal  address      :   std_logic_vector(31 downto 0)   ;
-signal  chip_sel     :   std_logic                       ;
-signal  byte_enable  :   std_logic_vector(3 downto 0)    ;
-
-signal  StateCurrent   :  state     ;
-signal  StateNext      :  state     ;
-
-signal  BvalidCurrent  :   std_logic   ;
-signal  AwreadyCurrent :   std_logic   ;
-signal  ArreadyCurrent :   std_logic   ;
-signal  WreadyCurrent  :   std_logic   ;
-signal  RvalidCurrent  :   std_logic   ;
-
-signal  BvalidNext     :   std_logic   ;
-signal  AwreadyNext    :   std_logic   ;
-signal  ArreadyNext    :   std_logic   ;
-signal  WreadyNext     :   std_logic   ;
-signal  RvalidNext     :   std_logic   ;
+signal  AvsPcpAddress      :  std_logic_vector    (31 downto 0)   ;
+signal  AvsPcpByteenable   :  std_logic_vector    (3 downto 0)    ;
+signal  AvsPcpRead         :  std_logic  ;
+signal  AvsPcpWrite        :  std_logic  ;
+signal  AvsPcpWritedata    :  std_logic_vector   (31 downto 0);
+signal  AvsPcpReaddata     :  std_logic_vector   (31 downto 0);
+signal  AvsPcpWaitrequest  :  std_logic   ;
 
 begin
 
-    S_AXI_BVALID     <=   BvalidCurrent     ;
-    S_AXI_AWREADY    <=   AwreadyCurrent    ;
-    S_AXI_ARREADY    <=   ArreadyCurrent    ;
-    S_AXI_WREADY     <=   WreadyCurrent     ;
-    S_AXI_RVALID     <=   RvalidCurrent     ;
-    S_AXI_BRESP      <=   "00"        ;   --always OK
-    S_AXI_RRESP      <=   "00"        ;   --always ok
-
-    -- Address Decoder
-SEL_IP:
-    process ( S_AXI_AWADDR , S_AXI_ARADDR )
-    begin
-        if ((C_BASEADDR <=  S_AXI_AWADDR) and (S_AXI_AWADDR <= C_HIGHADDR))
-        then
-            chip_sel    <=  '1' ;
-        elsif ((C_BASEADDR <=  S_AXI_ARADDR) and (S_AXI_ARADDR <= C_HIGHADDR))
-        then
-            chip_sel    <=  '1' ;
-        else
-            chip_sel    <=  '0' ;
-        end if;
-    end process;
-
-    --TODO: Mux Addresss
-SEL_ADDR:
-    process (S_AXI_ARVALID , S_AXI_AWVALID, S_AXI_ARADDR , S_AXI_AWADDR, chip_sel)
-    begin
-        if ((chip_sel and S_AXI_ARVALID)='1' )
-        then
-            address     <=  S_AXI_ARADDR ;
-        elsif ((chip_sel and S_AXI_AWVALID)='1' )
-        then
-            address     <= S_AXI_AWADDR ;
-        else
-            address     <= x"00000000"  ;
-        end if;
-    end process;
- --TODO: Byte Enable : Axi Lite supports all data accesses use the full width of the data bus
- --- AXI4-Lite supports a data bus width of 32-bit or 64-bit. SPEC B1- Definition of AXI Lite
- --Supports 4byte read/write
-
-    byte_enable <= S_AXI_WSTRB ;
-
-
---AXI Write/Read Data Control signls FSM
-
---Registerd Logic for FSM
-SEQ_LOGIC_FSM:
-    process (ACLK)
-    begin
-        if(rising_edge(ACLK))
-        then
-        if( ARESETN = '0' )
-        then
-            StateCurrent     <= sIDLE ;
-            BvalidCurrent    <= '0' ;
-            AwreadyCurrent   <= '0' ;
-            ArreadyCurrent   <= '0' ;
-            WreadyCurrent    <= '0' ;
-            RvalidCurrent    <= '0' ;
-        else
-            StateCurrent     <= StateNext ;
-            BvalidCurrent    <= BvalidNext;
-            AwreadyCurrent   <= AwreadyNext ;
-            ArreadyCurrent   <= ArreadyNext ;
-            WreadyCurrent    <= WreadyNext ;
-            RvalidCurrent    <= RvalidNext ;
-        end if;
-       end if;
-    end process;
+WRAPPER: entity work.axi_lite_slave_wrapper
+    generic map (
+    C_BASEADDR         => C_BASEADDR ,
+    C_HIGHADDR         => C_HIGHADDR ,
+    C_S_AXI_ADDR_WIDTH => C_S_AXI_ADDR_WIDTH ,
+    C_S_AXI_DATA_WIDTH => C_S_AXI_DATA_WIDTH
+    )
+    port map
+    (
+    -- System Signals
+    ACLK            =>  ACLK    ,
+    ARESETN         =>  ARESETN ,
+    -- Slave Interface Write Address Ports
+    S_AXI_AWADDR    =>  S_AXI_AWADDR    ,
+    S_AXI_AWPROT    =>  S_AXI_AWPROT    ,
+    S_AXI_AWVALID   =>  S_AXI_AWVALID   ,
+    S_AXI_AWREADY   =>  S_AXI_AWREADY   ,
+    -- Slave Interface Write Data Ports
+    S_AXI_WDATA     =>  S_AXI_WDATA     ,
+    S_AXI_WSTRB     =>  S_AXI_WSTRB     ,
+    S_AXI_WVALID    =>  S_AXI_WVALID    ,
+    S_AXI_WREADY    =>  S_AXI_WREADY    ,
+    -- Slave Interface Write Response Ports
+    S_AXI_BRESP     =>  S_AXI_BRESP     ,
+    S_AXI_BVALID    =>  S_AXI_BVALID    ,
+    S_AXI_BREADY    =>  S_AXI_BREADY    ,
+    -- Slave Interface Read Address Ports
+    S_AXI_ARADDR    =>  S_AXI_ARADDR    ,
+    S_AXI_ARPROT    =>  S_AXI_ARPROT    ,
+    S_AXI_ARVALID   =>  S_AXI_ARVALID   ,
+    S_AXI_ARREADY   =>  S_AXI_ARREADY   ,
+    -- Slave Interface Read Data Ports
+    S_AXI_RDATA     =>  S_AXI_RDATA     ,
+    S_AXI_RRESP     =>  S_AXI_RRESP     ,
+    S_AXI_RVALID    =>  S_AXI_RVALID    ,
+    S_AXI_RREADY    =>  S_AXI_RREADY    ,
+    --Avalon Interface
+    oAvsPcpAddress  =>  AvsPcpAddress   ,
+    oAvsPcpByteenable =>    AvsPcpByteenable ,
+    oAvsPcpRead     =>  AvsPcpRead      ,
+    oAvsPcpWrite    =>  AvsPcpWrite     ,
+    oAvsPcpWritedata => AvsPcpWritedata ,
+    iAvsPcpReaddata =>  AvsPcpReaddata  ,
+    iAvsPcpWaitrequest =>   AvsPcpWaitrequest
+    );
 
 
---Step1: Wait for Address Valid --> Go to Read/Write (Step 2 or 3)
---Step2: Wait for ReadReady --> ReadValid & ReadAddressReady assert
---Step3: Wait for Wdata Valis --> Assert Wready & Awready & Bvalid with Bresp
-
---Combinational Logic for FSM
-COM_LOGIC_FSM:
-    process (StateCurrent)
-    begin
-    case (StateCurrent) is
-            when sIDLE =>
-               BvalidNext    <= '0' ;
-               AwreadyNext   <= '0' ;
-               ArreadyNext   <= '0' ;
-               WreadyNext    <= '0' ;
-               RvalidNext    <= '0' ;
-
-               if(chip_sel = '1' )
-                then
-                   if(S_AXI_AWVALID    =   '1') then
-                   StateNext <= sWRITE ;
-                   elsif (S_AXI_ARVALID    =   '1') then
-                   StateNext  <= sREAD ;
-                   else
-                   StateNext  <= sIDLE ;
-                   end if;
-                else
-                   StateNext <= sIDLE ;
-               end if;
-
-            when sDELAY =>
-               BvalidNext    <= '0' ;
-               AwreadyNext   <= '0' ;
-               ArreadyNext   <= '0' ;
-               WreadyNext    <= '0' ;
-               RvalidNext    <= '0' ;
-               StateNext <= sIDLE ;
-
-            when sREAD =>
-               BvalidNext    <= '0' ;
-               AwreadyNext   <= '0' ;
-               WreadyNext    <= '0' ;
-
-               if( S_AXI_RREADY = '1' )
-                then
-                 ArreadyNext   <= '1' ;
-                 RvalidNext    <= '1' ;
-                 StateNext     <= sDELAY ;
-               else
-                 ArreadyNext   <= '0' ;
-                 RvalidNext    <= '0' ;
-                 StateNext     <= sREAD ;
-               end if;
-
-            when sWRITE =>
-
-               ArreadyNext   <= '0' ;
-               RvalidNext    <= '0' ;
-
-               if(S_AXI_WVALID = '1' )
-                then
-                  AwreadyNext   <= '1' ;
-                  BvalidNext    <= '1' ; --TODO: Handle Response Independently
-                  WreadyNext    <= '1' ;
-                  StateNext     <= sDELAY ;
-               else
-                  AwreadyNext   <= '0' ;
-                  BvalidNext    <= '0' ; --TODO: Handle Response Independently
-                  WreadyNext    <= '0';
-                  StateNext     <= sWRITE ;
-               end if;
-
-            when others =>
-
-        end case;
-    end process;
-
-    SLAVE: entity work.avalon_slave
-            port map
-                (
-                  iClk                  =>  ACLK                    ,
-                  nReset                =>  ARESETN                 ,
-                  avs_pcp_address       =>  address (10 downto 0)   ,
-                  avs_pcp_byteenable    =>  byte_enable             ,
-                  avs_pcp_read          =>  S_AXI_RREADY            ,
-                  avs_pcp_READData      =>  S_AXI_RDATA             ,   --TODO:Check Direct Assign is fine or not
-                  avs_pcp_write         =>  S_AXI_WVALID            ,
-                  avs_pcp_writedata     =>  S_AXI_WDATA             ,    --TODO:Check Direct Assign is fine or not
-                  avs_pcp_waitrequest   =>  open                        --TODO: No need of wait request
-                 );
+SLAVE: entity work.avalon_slave
+        port map
+            (
+              iClk                  =>  ACLK                    ,
+              nReset                =>  ARESETN                 ,
+              avs_pcp_address       =>  AvsPcpAddress (10 downto 0)   ,
+              avs_pcp_byteenable    =>  AvsPcpByteenable             ,
+              avs_pcp_read          =>  AvsPcpRead            ,
+              avs_pcp_READData      =>  AvsPcpReaddata             ,   --TODO:Check Direct Assign is fine or not
+              avs_pcp_write         =>  AvsPcpWrite            ,
+              avs_pcp_writedata     =>  AvsPcpWritedata             ,    --TODO:Check Direct Assign is fine or not
+              avs_pcp_waitrequest   =>  AvsPcpWaitrequest                        --TODO: No need of wait request
+             );
 
 end implementation;

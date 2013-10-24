@@ -47,6 +47,7 @@
 
 
 lib axi_lite_slave_v1_00_a axi_lite_slave.v verilog
+lib axi_lite_slave_v1_00_a axi_lite_salve_wrapper.v verilog
 #lib axi_lite_slave_v1_00_a axi_lite_slave.vhd vhdl
 lib axi_lite_slave_v1_00_a ../../../../../../avalon_ip/rtl/avalon_slave/avalon_slave.v verilog
 

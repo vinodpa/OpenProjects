@@ -43,11 +43,11 @@ begin
     else if( avs_pcp_read == 1'b1 )
     begin
        //TODO: Integrate Byte Enable
-       case  (avs_pcp_address [7:0])
+       case  (avs_pcp_address [9:2])
        8'h00 : avs_pcp_readdata <= slave_reg0  ;
-       8'h04 : avs_pcp_readdata <= slave_reg1  ;
-       8'h08 : avs_pcp_readdata <= slave_reg2  ;
-       8'h0C : avs_pcp_readdata <= slave_reg3  ;
+       8'h01 : avs_pcp_readdata <= slave_reg1  ;
+       8'h02 : avs_pcp_readdata <= slave_reg2  ;
+       8'h03 : avs_pcp_readdata <= slave_reg3  ;
        default:
        begin
         //TODO:
@@ -74,11 +74,17 @@ begin
     else if( avs_pcp_write == 1'b1 )
     begin
        //TODO: Integrate Byte Enable
-       case  (avs_pcp_address [7:0])
-       8'h00 : slave_reg0 <= avs_pcp_writedata ;
-       8'h04 : slave_reg1 <= avs_pcp_writedata ;
-       8'h08 : slave_reg2 <= avs_pcp_writedata ;
-       8'h0C : slave_reg3 <= avs_pcp_writedata ;
+       case  (avs_pcp_address [9:2])
+       8'h00 :
+        begin
+            if (avs_pcp_byteenable [0] == 1'b1 )       slave_reg0 [7:0]    <= avs_pcp_writedata [7:0] ;
+            else if (avs_pcp_byteenable [1] == 1'b1)   slave_reg0 [15:8]   <= avs_pcp_writedata [15:8] ;
+            else if (avs_pcp_byteenable [2] == 1'b1)   slave_reg0 [23:16]  <= avs_pcp_writedata [23:16] ;
+            else                                       slave_reg0 [31:24]  <= avs_pcp_writedata [31:24] ;
+        end
+       8'h01 : slave_reg1 <= avs_pcp_writedata ;
+       8'h02 : slave_reg2 <= avs_pcp_writedata ;
+       8'h03 : slave_reg3 <= avs_pcp_writedata ;
        default:
        begin
         //TODO:
