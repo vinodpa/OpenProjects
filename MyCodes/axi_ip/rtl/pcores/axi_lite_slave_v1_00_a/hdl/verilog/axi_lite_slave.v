@@ -65,7 +65,7 @@ parameter   WRITE   = 2'b11    ;
 //Avalon Interface designs
 wire [31:0]      address;
 wire             chip_sel ;
-wire [3:0]       byte_enable = S_AXI_WSTRB;
+wire [3:0]       byte_enable ;
 
 reg [1:0]       pState  ;
 reg [1:0]       nState  ;
@@ -93,6 +93,8 @@ assign  address =  (chip_sel & S_AXI_ARVALID ) ? S_AXI_ARADDR :
 //TODO: Byte Enable : Axi Lite supports all data accesses use the full width of the data bus
 //                   — AXI4-Lite supports a data bus width of 32-bit or 64-bit. SPEC B1- Definition of AXI Lite
 //Supports 4byte read/write
+
+assign byte_enable  = S_AXI_WSTRB ;
 
 assign S_AXI_BVALID     =   pBvalid     ;
 assign S_AXI_AWREADY    =   pAwready    ;
