@@ -12,7 +12,7 @@ use ieee.numeric_std.all;
 --library unisim;
 --use unisim.vcomponents.all;
 
-entity axi_lite_slave is
+entity axi_lite_slave_wrapper is
 generic
     (
     C_BASEADDR         : std_logic_vector(31 downto 0) := x"00000000";
@@ -24,73 +24,56 @@ generic
 port
     (
     -- System Signals
-    ACLK            :   in      std_logic                                               ;
-    ARESETN         :   in      std_logic                                               ;
+    ACLK            :   in  std_logic                                        ;
+    ARESETN         :   in  std_logic                                        ;
     -- Slave Interface Write Address Ports
-    S_AXI_AWADDR    :   in      std_logic_vector    (C_S_AXI_ADDR_WIDTH -1 downto 0)    ;
-    S_AXI_AWPROT    :   in      std_logic_vector    (3-1 downto 0)                      ;
-    S_AXI_AWVALID   :   in      std_logic                                               ;
-    S_AXI_AWREADY   :   out     std_logic                                               ;
+    S_AXI_AWADDR    :   in  std_logic_vector (C_S_AXI_ADDR_WIDTH -1 downto 0);
+    S_AXI_AWPROT    :   in  std_logic_vector ( 2 downto 0)                   ;
+    S_AXI_AWVALID   :   in  std_logic                                        ;
+    S_AXI_AWREADY   :   out std_logic                                        ;
     -- Slave Interface Write Data Ports
-    S_AXI_WDATA     :   in      std_logic_vector    (C_S_AXI_DATA_WIDTH-1 downto 0)     ;
-    S_AXI_WSTRB     :   in      std_logic_vector    (C_S_AXI_DATA_WIDTH/8-1 downto 0)   ;
-    S_AXI_WVALID    :   in      std_logic                                               ;
-    S_AXI_WREADY    :   out     std_logic                                               ;
+    S_AXI_WDATA     :   in  std_logic_vector (C_S_AXI_DATA_WIDTH-1 downto 0) ;
+    S_AXI_WSTRB     :   in  std_logic_vector (C_S_AXI_DATA_WIDTH/8-1 downto 0);
+    S_AXI_WVALID    :   in  std_logic                                        ;
+    S_AXI_WREADY    :   out std_logic                                        ;
     -- Slave Interface Write Response Ports
-    S_AXI_BRESP     :   out     std_logic_vector    (2-1 downto 0)                      ;
-    S_AXI_BVALID    :   out     std_logic                                               ;
-    S_AXI_BREADY    :   in      std_logic                                               ;
+    S_AXI_BRESP     :   out std_logic_vector (1 downto 0)                    ;
+    S_AXI_BVALID    :   out std_logic                                        ;
+    S_AXI_BREADY    :   in  std_logic                                        ;
     -- Slave Interface Read Address Ports
-    S_AXI_ARADDR    :   in      std_logic_vector    (C_S_AXI_ADDR_WIDTH -1 downto 0)    ;
-    S_AXI_ARPROT    :   in      std_logic_vector    (3-1 downto 0)                      ;
-    S_AXI_ARVALID   :   in      std_logic                                               ;
-    S_AXI_ARREADY   :   out     std_logic                                               ;
+    S_AXI_ARADDR    :   in  std_logic_vector (C_S_AXI_ADDR_WIDTH -1 downto 0);
+    S_AXI_ARPROT    :   in  std_logic_vector (2 downto 0)                    ;
+    S_AXI_ARVALID   :   in  std_logic                                        ;
+    S_AXI_ARREADY   :   out std_logic                                        ;
     -- Slave Interface Read Data Ports
-    S_AXI_RDATA     :   out     std_logic_vector    (C_S_AXI_DATA_WIDTH-1 downto 0)     ;
-    S_AXI_RRESP     :   out     std_logic_vector    (2-1 downto 0)                      ;
-    S_AXI_RVALID    :   out     std_logic                                               ;
-    S_AXI_RREADY    :   in      std_logic                                               ;
+    S_AXI_RDATA     :   out std_logic_vector (C_S_AXI_DATA_WIDTH-1 downto 0) ;
+    S_AXI_RRESP     :   out std_logic_vector (1 downto 0)                    ;
+    S_AXI_RVALID    :   out std_logic                                        ;
+    S_AXI_RREADY    :   in  std_logic                                        ;
     --Avalon Interface
-    oAvsPcpAddress      :   out std_logic_vector    (31 downto 0)   ;
-    oAvsPcpByteenable   :   out std_logic_vector    (3 downto 0)    ;
-    oAvsPcpRead         :   out std_logic  ;
-    oAvsPcpWrite        :   out std_logic  ;
-    oAvsPcpWritedata    :   out std_logic_vector   (31 downto 0);
-    iAvsPcpReaddata     :   in  std_logic_vector   (31 downto 0);
-    iAvsPcpWaitrequest  :   in  std_logic
+    oAvsAddress      :   out std_logic_vector    (31 downto 0)   ;
+    oAvsByteenable   :   out std_logic_vector    (3 downto 0)    ;
+    oAvsRead         :   out std_logic  ;
+    oAvsWrite        :   out std_logic  ;
+    oAvsWritedata    :   out std_logic_vector   (31 downto 0);
+    iAvsReaddata     :   in  std_logic_vector   (31 downto 0);
+    iAvsWaitrequest  :   in  std_logic
     );
 
-end axi_lite_slave;
+end axi_lite_slave_wrapper;
 
-architecture implementation of axi_lite_slave is
+architecture implementation of axi_lite_slave_wrapper is
 
---component avalon_slave
---   port
---      (
---          iClk                  :   in  std_logic                       ;
---          nReset                :   in  std_logic                       ;
---          avs_pcp_address       :   in  std_logic_vector(10 downto 0)   ;
---          avs_pcp_byteenable    :   in  std_logic_vector(3 downto 0)    ;
---          avs_pcp_read          :   in  std_logic                       ;
---          avs_pcp_readdata      :   out std_logic_vector(31 downto 0)   ;
---          avs_pcp_write         :   in  std_logic                       ;
---          avs_pcp_writedata     :   in  std_logic_vector(31 downto 0)   ;
---          avs_pcp_waitrequest   :   out std_logic
---      );
---end component;
 
 type state is (sIDLE,sDELAY,sREAD,sWRITE) ;
 
---constant IDLE   : std_logic_vector(1 downto 0) := "00";
---constant DELAY  : std_logic_vector(1 downto 0) := "01";
---constant READD  : std_logic_vector(1 downto 0) := "10";
---constant WRITEE : std_logic_vector(1 downto 0) := "11";
 
 --Avalon Interface designs
 signal  address      :   std_logic_vector(31 downto 0)   ;
 signal  chip_sel     :   std_logic                       ;
 signal  byte_enable  :   std_logic_vector(3 downto 0)    ;
 
+--Signals for FSM
 signal  StateCurrent   :  state     ;
 signal  StateNext      :  state     ;
 
@@ -110,13 +93,13 @@ begin
 
 
     --Ouput Signals assigns
-    oAvsPcpAddress      <=  address             ;
-    oAvsPcpByteenable   <=  byte_enable         ;
-    oAvsPcpRead         <=  S_AXI_RREADY        ;
-    oAvsPcpWrite        <=  S_AXI_WVALID        ;
-    oAvsPcpWritedata    <=  S_AXI_WDATA         ;
-    S_AXI_RDATA         <=  iAvsPcpReaddata     ;
---                        <=  iAvsPcpWaitrequest
+    oAvsAddress      <=  address             ;
+    oAvsByteenable   <=  byte_enable         ;
+    oAvsRead         <=  S_AXI_RREADY        ;
+    oAvsWrite        <=  S_AXI_WVALID        ;
+    oAvsWritedata    <=  S_AXI_WDATA         ;
+    S_AXI_RDATA         <=  iAvsReaddata     ;
+--                        <=  iAvsWaitrequest
 
     S_AXI_BVALID     <=   BvalidCurrent     ;
     S_AXI_AWREADY    <=   AwreadyCurrent    ;
@@ -155,9 +138,9 @@ SEL_ADDR:
             address     <= x"00000000"  ;
         end if;
     end process;
- --TODO: Byte Enable : Axi Lite supports all data accesses use the full width of the data bus
- --- AXI4-Lite supports a data bus width of 32-bit or 64-bit. SPEC B1- Definition of AXI Lite
- --Supports 4byte read/write
+ --TODO: Byte Enable : Axi Lite supports all data accesses use the full width of the data bus.
+ ---AXI4-Lite supports a data bus width of 32-bit or 64-bit. [SPEC B1- Definition of AXI Lite]
+ --Cheat Code 1: Added the functionality STRB from AXI4
 
     byte_enable <= S_AXI_WSTRB ;
 
@@ -265,19 +248,5 @@ COM_LOGIC_FSM:
 
         end case;
     end process;
-
-    SLAVE: entity work.avalon_slave
-            port map
-                (
-                  iClk                  =>  ACLK                    ,
-                  nReset                =>  ARESETN                 ,
-                  avs_pcp_address       =>  address (10 downto 0)   ,
-                  avs_pcp_byteenable    =>  byte_enable             ,
-                  avs_pcp_read          =>  S_AXI_RREADY            ,
-                  avs_pcp_READData      =>  S_AXI_RDATA             ,   --TODO:Check Direct Assign is fine or not
-                  avs_pcp_write         =>  S_AXI_WVALID            ,
-                  avs_pcp_writedata     =>  S_AXI_WDATA             ,    --TODO:Check Direct Assign is fine or not
-                  avs_pcp_waitrequest   =>  open                        --TODO: No need of wait request
-                 );
 
 end implementation;

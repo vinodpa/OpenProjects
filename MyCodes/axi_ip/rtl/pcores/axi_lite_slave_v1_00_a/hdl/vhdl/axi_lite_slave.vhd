@@ -103,13 +103,13 @@ WRAPPER: entity work.axi_lite_slave_wrapper
     S_AXI_RVALID    =>  S_AXI_RVALID    ,
     S_AXI_RREADY    =>  S_AXI_RREADY    ,
     --Avalon Interface
-    oAvsPcpAddress  =>  AvsPcpAddress   ,
-    oAvsPcpByteenable =>    AvsPcpByteenable ,
-    oAvsPcpRead     =>  AvsPcpRead      ,
-    oAvsPcpWrite    =>  AvsPcpWrite     ,
-    oAvsPcpWritedata => AvsPcpWritedata ,
-    iAvsPcpReaddata =>  AvsPcpReaddata  ,
-    iAvsPcpWaitrequest =>   AvsPcpWaitrequest
+    oAvsAddress  =>  AvsPcpAddress   ,
+    oAvsByteenable =>    AvsPcpByteenable ,
+    oAvsRead     =>  AvsPcpRead      ,
+    oAvsWrite    =>  AvsPcpWrite     ,
+    oAvsWritedata => AvsPcpWritedata ,
+    iAvsReaddata =>  AvsPcpReaddata  ,
+    iAvsWaitrequest =>   AvsPcpWaitrequest
     );
 
 
