@@ -1,0 +1,25 @@
+##############################################################################
+## Filename:          D:/MY_EXP/Coding/myworks/OpenProjects/MyCodes/axi_ip/ReferenceDesign/sp605/pcores/axi_hostinterface_v1_00_a/data/axi_hostinterface_v2_1_0.pao
+## Description:       Peripheral Analysis Order
+## Date:              Fri Oct 25 17:38:10 2013 (by Create and Import Peripheral Wizard)
+##############################################################################
+
+lib axi_hostinterface_v1_00_a axi_hostinterface vhdl
+lib axi_hostinterface_v1_00_a parallelInterfaceRtl.vhd vhdl
+lib axi_hostinterface_v1_00_a synchronizerRtl.vhd vhdl
+lib axi_hostinterface_v1_00_a edgedetectorRtl.vhd vhdl
+lib axi_hostinterface_v1_00_a hostInterfacePkg.vhd vhdl
+lib axi_hostinterface_v1_00_a hostInterfaceRtl.vhd vhdl
+lib axi_hostinterface_v1_00_a dynamicBridgeRtl.vhd vhdl
+lib axi_hostinterface_v1_00_a cntRtl.vhd vhdl
+lib axi_hostinterface_v1_00_a addrDecodeRtl.vhd vhdl
+lib axi_hostinterface_v1_00_a binaryEncoderRtl.vhd vhdl
+lib axi_hostinterface_v1_00_a lutFileRtl.vhd vhdl
+lib axi_hostinterface_v1_00_a registerFileRtl.vhd vhdl
+lib axi_hostinterface_v1_00_a dpRam-e.vhd vhdl
+lib axi_hostinterface_v1_00_a dpRam-rtl-a.vhd vhdl
+lib axi_hostinterface_v1_00_a global.vhd vhdl
+lib axi_hostinterface_v1_00_a irqGenRtl.vhd vhdl
+lib axi_hostinterface_v1_00_a statusControlRegRtl.vhd vhdl
+lib axi_hostinterface_v1_00_a axi_lite_slave_wrapperRtl.vhd vhdl
+

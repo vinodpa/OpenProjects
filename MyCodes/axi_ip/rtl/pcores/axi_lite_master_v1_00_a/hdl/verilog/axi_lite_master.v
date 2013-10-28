@@ -2,38 +2,12 @@
 //
 // AXI4-Lite Master
 //
-////////////////////////////////////////////////////////////////////////////
-//
-// Structure:
-//   axi_lite_master
-//
-// Last Update:
-//   7/8/2010
-////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 /*
  AXI4-Lite Master Example
 
  The purpose of this design is to provide a simple AXI4-Lite example.
 
- The distinguishing characteristics of AXI4-Lite are the single-beat transfers,
- limited data width, and limited other transaction qualifiers. These make it
- best suited for low-throughput control functions.
-
- The example user application will perform a set of writes from a lookup
- table. This may be useful for initial register configurations, such as
- setting the AXI_VDMA register settings. After completing all the writes,
- the example design will perform reads and attempt to verify the values.
-
- If the reads match the write values and no error responses were captured,
- the DONE_SUCCESS output will be asserted.
-
- To modify this example for other applications, edit/remove the logic
- associated with the 'Example' section comments. Generally, this example
- works by the user providing a 'push_write' or 'pop_read' command to initiate
- a command and data transfer.
-
- The latest version of this file can be found in Xilinx Answer 37425
- http://www.xilinx.com/support/answers/37425.htm
 */
 `timescale 1ns/1ps
 

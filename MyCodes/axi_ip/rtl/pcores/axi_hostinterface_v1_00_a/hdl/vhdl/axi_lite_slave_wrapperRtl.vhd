@@ -140,7 +140,7 @@ SEL_ADDR:
     end process;
  --TODO: Byte Enable : Axi Lite supports all data accesses use the full width of the data bus.
  ---AXI4-Lite supports a data bus width of 32-bit or 64-bit. [SPEC B1- Definition of AXI Lite]
- --Cheat Code 1: Added the functionality STRB from AXI4 TODO: Add read strobe also
+ --Cheat Code 1: Added the functionality STRB from AXI4
 
     byte_enable <= S_AXI_WSTRB ;
 
