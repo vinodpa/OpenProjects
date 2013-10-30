@@ -113,27 +113,54 @@ assign M_AXI_ARVALID   = Arvalid ;
 assign M_AXI_RREADY    = Rready  ;
 //Address & Data Valid AWVALID & WVALID
 // TODO: Combinational Feedback on systems , Not a good Idea ?
+//AWValid Handling
+always @ (posedge M_AXI_ACLK)
+begin
+    if(M_AXI_ARESETN == 1'b0)
+    begin
+        //Wvalid  <= 1'b0 ;
+        Awvalid <= 1'b0 ;
+    end
+    //else if ((M_AXI_AWREADY && M_AXI_WREADY) == 1'b1)
+    else if (M_AXI_AWREADY == 1'b1)
+    begin
+        //Wvalid  <= 1'b0 ;
+        Awvalid <= 1'b0 ;
+    end
+    else if (avalonWrite == 1'b1)
+    begin
+        //Wvalid  <= 1'b1 ;
+        Awvalid <= 1'b1 ;
+    end
+    else
+    begin
+        //Wvalid  <= Wvalid  ;
+        Awvalid <= Awvalid ;
+    end
+end
+//WValid Handling
 always @ (posedge M_AXI_ACLK)
 begin
     if(M_AXI_ARESETN == 1'b0)
     begin
         Wvalid  <= 1'b0 ;
-        Awvalid <= 1'b0 ;
+        //Awvalid <= 1'b0 ;
     end
-    else if ((M_AXI_AWREADY && M_AXI_WREADY) == 1'b1)
+    //else if ((M_AXI_AWREADY && M_AXI_WREADY) == 1'b1)
+    else if (M_AXI_WREADY == 1'b1)
     begin
         Wvalid  <= 1'b0 ;
-        Awvalid <= 1'b0 ;
+        //Awvalid <= 1'b0 ;
     end
     else if (avalonWrite == 1'b1)
     begin
         Wvalid  <= 1'b1 ;
-        Awvalid <= 1'b1 ;
+        //Awvalid <= 1'b1 ;
     end
     else
     begin
         Wvalid  <= Wvalid  ;
-        Awvalid <= Awvalid ;
+        //Awvalid <= Awvalid ;
     end
 end
 //Write Response Handling
@@ -157,27 +184,54 @@ begin
     end
 end
 // AXI Read Signal Handling
+//ARValid handling
+always @ (posedge M_AXI_ACLK)
+begin
+    if(M_AXI_ARESETN == 1'b0)
+    begin
+        //Rready  <= 1'b0 ;
+        Arvalid <= 1'b0 ;
+    end
+    //else if ((M_AXI_ARREADY && M_AXI_RVALID) == 1'b1)
+    else if (M_AXI_ARREADY  == 1'b1)
+    begin
+        //Rready  <= 1'b0 ;
+        Arvalid <= 1'b0 ;
+    end
+    else if (avalonRead == 1'b1)
+    begin
+        //Rready  <= 1'b1 ;
+        Arvalid <= 1'b1 ;
+    end
+    else
+    begin
+        //Rready  <= Rready  ;
+        Arvalid <= Arvalid ;
+    end
+end
+//RReady Handling
 always @ (posedge M_AXI_ACLK)
 begin
     if(M_AXI_ARESETN == 1'b0)
     begin
         Rready  <= 1'b0 ;
-        Arvalid <= 1'b0 ;
+        //Arvalid <= 1'b0 ;
     end
-    else if ((M_AXI_ARREADY && M_AXI_RVALID) == 1'b1)
+    //else if ((M_AXI_ARREADY && M_AXI_RVALID) == 1'b1)
+    else if (M_AXI_RVALID == 1'b1)
     begin
         Rready  <= 1'b0 ;
-        Arvalid <= 1'b0 ;
+        //Arvalid <= 1'b0 ;
     end
     else if (avalonRead == 1'b1)
     begin
         Rready  <= 1'b1 ;
-        Arvalid <= 1'b1 ;
+        //Arvalid <= 1'b1 ;
     end
     else
     begin
         Rready  <= Rready  ;
-        Arvalid <= Arvalid ;
+        //Arvalid <= Arvalid ;
     end
 end
 
@@ -185,8 +239,9 @@ end
 ********************************************************************************
 */
 assign start_transfer   =   (avalonRead || avalonWrite) ;
-assign done_transfer    =   (M_AXI_AWREADY && M_AXI_WREADY && M_AXI_BVALID) ||
-                            (M_AXI_ARREADY && M_AXI_RVALID) ;
+//assign done_transfer    =   (M_AXI_AWREADY && M_AXI_WREADY && M_AXI_BVALID) ||
+//                            (M_AXI_ARREADY && M_AXI_RVALID) ;
+assign done_transfer    =   M_AXI_BVALID || M_AXI_RVALID ;
 // Read Data Valid
 assign avalonReadValid   =  M_AXI_RVALID ;
 //Read Data
@@ -231,7 +286,7 @@ end
 avalon_master #(
     .ADDR_WIDTH (32),
     .WIDTH_WIDTH (32),
-    .READ_WRITE_ADDR (32'h88000000),
+    .READ_WRITE_ADDR (32'hC7000000),
     .NO_READ_WRITE   (16)
  )
  AVALON_MASTER(
