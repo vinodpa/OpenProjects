@@ -58,7 +58,7 @@ begin
     else
     begin
         //Free Readdata
-       avs_pcp_readdata <= 32'hABCD_ABCD;
+       avs_pcp_readdata <= 32'hZZZZ_ZZZZ;
     end
 
 end
