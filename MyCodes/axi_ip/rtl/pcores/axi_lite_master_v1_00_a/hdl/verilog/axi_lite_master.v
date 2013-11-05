@@ -89,13 +89,13 @@ axi_lite_master_wrapper #
     // Master Interface Write Response
     .M_AXI_BRESP        (M_AXI_BRESP),
     .M_AXI_BVALID       (M_AXI_BVALID),
-    .M_AXI_BREADY       (M_AXI_BREADY,
+    .M_AXI_BREADY       (M_AXI_BREADY),
 
     // Master Interface Read Address
     .M_AXI_ARADDR       (M_AXI_ARADDR),
-    .M_AXI_ARPROT       (M_AXI_ARPROT,
+    .M_AXI_ARPROT       (M_AXI_ARPROT),
     .M_AXI_ARVALID      (M_AXI_ARVALID),
-    .M_AXI_ARREADY      (M_AXI_ARREADY,
+    .M_AXI_ARREADY      (M_AXI_ARREADY),
 
     // Master Interface Read Data
     .M_AXI_RDATA        (M_AXI_RDATA),
