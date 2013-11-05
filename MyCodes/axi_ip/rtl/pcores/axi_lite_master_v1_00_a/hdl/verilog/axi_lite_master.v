@@ -48,7 +48,25 @@ module axi_lite_master #
     input wire [C_M_AXI_DATA_WIDTH-1:0] M_AXI_RDATA,
     input wire [2-1:0] M_AXI_RRESP,
     input wire M_AXI_RVALID,
-    output wire M_AXI_RREADY
+    output wire M_AXI_RREADY,
+    //test ports
+    output wire test_RValid,
+    output wire test_RReady,
+    output wire test_Arvalid,
+    output wire test_Arready,
+    output wire test_Bready,
+    output wire test_Bvalid,
+    output wire test_Wvalid,
+    output wire test_Wready,
+    output wire test_Awvalid,
+    output wire test_Awready,
+    output wire test_wait,
+    output wire test_read,
+    output wire test_write,
+    output wire [31:0] test_awaddr,
+    output wire [31:0] test_wdata,
+    output wire [31:0] test_araddr,
+    output wire [31:0] test_rdata
     );
 
     //Avalon Signals
@@ -62,6 +80,24 @@ wire                        avalonReadValid ;
 wire    [31:0]              avalonReadData  ;
 wire    [31:0]              avalonWriteData ;
 
+
+assign test_RValid  =   M_AXI_RVALID    ;
+assign test_RReady  =   M_AXI_RREADY    ;
+assign test_Arvalid =   M_AXI_ARVALID   ;
+assign test_Arready =   M_AXI_ARREADY   ;
+assign test_Bready  =   M_AXI_BVALID    ;
+assign test_Bvalid  =   M_AXI_BREADY    ;
+assign test_Wvalid  =   M_AXI_WVALID    ;
+assign test_Wready  =   M_AXI_WREADY    ;
+assign test_Awvalid =   M_AXI_AWVALID   ;
+assign test_Awready =   M_AXI_AWREADY   ;
+assign test_wait    =   avalonWaitReq   ;
+assign test_read    =   avalonRead      ;
+assign test_write   =   avalonWrite     ;
+assign test_awaddr  =   M_AXI_AWADDR    ;
+assign test_wdata   =   M_AXI_WDATA     ;
+assign test_araddr  =   M_AXI_ARADDR    ;
+assign test_rdata   =   M_AXI_RDATA     ;
 
 axi_lite_master_wrapper #
    (

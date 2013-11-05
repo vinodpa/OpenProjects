@@ -156,7 +156,6 @@ assign M_AXI_RREADY    = wRready ;
 //AWValid Handling
 assign wAwvalid = (p2state == B2) ? 1'b1 : 1'b0;
 
-
 always @ (posedge M_AXI_ACLK)
 begin
     if(M_AXI_ARESETN == 1'b0)
@@ -228,7 +227,8 @@ begin
     endcase
 end
 //Write Response Handling
-assign wBready = (p4state == B4) ? 1'b1 : 1'b0;
+assign wBready = (p4state == C4) ? 1'b1 : 1'b0;
+//assign wBready = (M_AXI_BVALID == 1'b1)? 1'b1 : 1'b0;
 
 always @ (posedge M_AXI_ACLK)
 begin
@@ -263,27 +263,7 @@ begin
     end
     endcase
 end
-/*
-always @ (posedge M_AXI_ACLK)
-begin
-    if(M_AXI_ARESETN == 1'b0)
-    begin
-        Bready <= 1'b0  ;
-    end
-    else if (M_AXI_BVALID == 1'b1)
-    begin
-        Bready <= 1'b0  ;
-    end
-    else if (avalonWrite == 1'b1)
-    begin
-        Bready <= 1'b1  ;
-    end
-    else
-    begin
-        Bready <= Bready  ;
-    end
-end
-*/
+
 // AXI Read Signal Handling
 //ARValid handling
 /*
@@ -412,6 +392,7 @@ begin
         rRready <= wRready;
     end
 end
+*/
 /*
 *******************************************************
 */
@@ -458,27 +439,5 @@ assign avalonReadData   =   M_AXI_RDATA ;
 
 assign avalonWaitReq =  (done_transfer == 1'b1) ? 1'b0 :
                         (start_transfer == 1'b1)? 1'b1 :1'b0 ;
-
-//
-//Avalon Bus master Interface
-avalon_master #(
-    .ADDR_WIDTH (32),
-    .WIDTH_WIDTH (32),
-    .READ_WRITE_ADDR (32'hC7000000),
-    .NO_READ_WRITE   (16)
- )
- AVALON_MASTER(
-    .iClk       (M_AXI_ACLK),
-    .iResetn    (M_AXI_ARESETN),
-    .avalonRead (avalonRead),
-    .avalonWrite (avalonWrite),
-    .avalonAddr (avalonAddr),
-    .avalonBE (avalonBE),
-    .avalonBeginTransfer (avalonBeginTransfer),
-    .avalonWaitReq (avalonWaitReq),
-    .avalonReadValid (avalonReadValid),
-    .avalonReadData (avalonReadData),
-    .avalonWriteData (avalonWriteData)
- );
 
 endmodule
