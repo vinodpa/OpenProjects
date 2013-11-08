@@ -66,7 +66,9 @@ module axi_lite_master #
     output wire [31:0] test_awaddr,
     output wire [31:0] test_wdata,
     output wire [31:0] test_araddr,
-    output wire [31:0] test_rdata
+    output wire [31:0] test_rdata,
+    output wire [1:0]   test_avm_state,
+    input  wire         read_write
     );
 
     //Avalon Signals
@@ -100,6 +102,7 @@ assign test_araddr  =   M_AXI_ARADDR    ;
 assign test_rdata   =   M_AXI_RDATA     ;
 
 axi_lite_master_wrapper #
+//axi_master_wrapper #
    (
     .C_M_AXI_ADDR_WIDTH (C_M_AXI_ADDR_WIDTH),
     .C_M_AXI_DATA_WIDTH (C_M_AXI_DATA_WIDTH)
@@ -167,7 +170,9 @@ avalon_master #(
     .avalonWaitReq (avalonWaitReq),
     .avalonReadValid (avalonReadValid),
     .avalonReadData (avalonReadData),
-    .avalonWriteData (avalonWriteData)
+    .avalonWriteData (avalonWriteData),
+    .test_avm_state  (test_avm_state),
+    .read_write(read_write)
  );
 
 endmodule

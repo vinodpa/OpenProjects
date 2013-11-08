@@ -68,8 +68,8 @@ parameter WRITE_RES     = 3'b010 ;
 parameter READ_DATA     = 3'b011 ;
 parameter READ_RESP     = 3'b100 ;
 
-reg     [2:0]       StateCurrent ;
-reg     [2:0]       StateNext ;
+reg     [2:0]       CurrentState ;
+reg     [2:0]       NextState ;
 //Write Address Channel
 reg                             Awvalid ;
 wire                             wAwvalid ;
@@ -98,35 +98,21 @@ wire                             wRready     ;
 wire start_transfer ;
 wire done_transfer ;
 
-parameter A =2'b00;
-parameter B =2'b01;
-parameter C =2'b10;
-reg [1:0] nstate,pstate;
+wire    wRReady ;
+reg     rd_done   ;
 
-parameter A1 =2'b00;
-parameter B1 =2'b01;
-parameter C1 =2'b10;
-reg [1:0] n1state,p1state;
-
-parameter A2 =2'b00;
-parameter B2 =2'b01;
-parameter C2 =2'b10;
-reg [1:0] n2state,p2state;
-
-parameter A3 =2'b00;
-parameter B3 =2'b01;
-parameter C3 =2'b10;
-reg [1:0] n3state,p3state;
-
-parameter A4 =2'b00;
-parameter B4 =2'b01;
-parameter C4 =2'b10;
-reg [1:0] n4state,p4state;
-
+parameter INIT  = 3'b000;
+parameter AWVALID   = 3'b001;
+parameter WVALID    = 3'b010;
+parameter BREADY    = 3'b011;
+parameter ARVALID   = 3'b100;
+parameter RREADY    = 3'b101;
+parameter WRITE_DONE      = 3'b110;
+parameter READ_DONE      = 3'b111;
 
 // AXI Signals
 
-assign M_AXI_RRESP  = 2'b00     ; //TODO: Add other response also
+//assign M_AXI_RRESP  = 2'b00     ; //TODO: Add other response also
 assign M_AXI_AWPROT = 3'b000    ;
 assign M_AXI_ARPROT = 3'b000    ;
 
@@ -136,299 +122,27 @@ assign M_AXI_WDATA  = avalonWriteData ;
 assign M_AXI_WSTRB  = avalonBE  ;
 
 
-//AXI Write Operations
-//assign M_AXI_WVALID    = Wvalid  ;
-//assign M_AXI_AWVALID   = Awvalid ;
-//assign M_AXI_BREADY    = Bready  ;
+assign M_AXI_AWVALID   = (avalonWrite == 1'b1)? 1'b1 :
+                         (CurrentState == AWVALID) ? 1'b1: 1'b0;
 
-assign M_AXI_WVALID    = wWvalid  ;
-assign M_AXI_AWVALID   = wAwvalid ;
-assign M_AXI_BREADY    = wBready  ;
+assign M_AXI_WVALID    = (avalonWrite == 1'b1)? 1'b1 :
+                         (CurrentState == AWVALID)? 1'b1:
+                         (CurrentState == WVALID)? 1'b1 :1'b0;
 
+assign M_AXI_BREADY    = (CurrentState == WRITE_DONE) ? 1'b1: 1'b0; //TODO: 1 Clock dealy
 
-//AXI Read Operations
-//assign M_AXI_ARVALID   = Arvalid ;
-assign M_AXI_ARVALID   = wArvalid;
-//assign M_AXI_RREADY    = Rready  ;
-assign M_AXI_RREADY    = wRready ;
-//Address & Data Valid AWVALID & WVALID
-// TODO: Combinational Feedback on systems , Not a good Idea ?
-//AWValid Handling
-assign wAwvalid = (p2state == B2) ? 1'b1 : 1'b0;
-
-always @ (posedge M_AXI_ACLK)
-begin
-    if(M_AXI_ARESETN == 1'b0)
-    begin
-    p2state <= A2;
-    end
-    else
-    begin
-    p2state <= n2state ;
-    end
-end
-always @ (*)
-begin
-    case (p2state)
-    A2:
-    begin
-        if (avalonWrite  == 1'b1) n2state <= B2;
-        else n2state <= A2;
-    end
-    B2:
-    begin
-        if (M_AXI_AWREADY  == 1'b1) n2state <= C2;
-        else n2state <= B2;
-    end
-    C2:
-    begin
-        n2state <= A2;
-    end
-    default:
-    begin
-    end
-    endcase
-end
-//WValid Handling
-assign wWvalid = (p3state == B3) ? 1'b1 : 1'b0;
+assign M_AXI_ARVALID   = (avalonRead == 1'b1)? 1'b1 :
+                         (CurrentState ==  ARVALID) ? 1'b1: 1'b0 ;
+assign M_AXI_RREADY    = (CurrentState == READ_DONE) ? 1'b1: 1'b0;
 
 
-always @ (posedge M_AXI_ACLK)
-begin
-    if(M_AXI_ARESETN == 1'b0)
-    begin
-    p3state <= A3;
-    end
-    else
-    begin
-    p3state <= n3state ;
-    end
-end
-always @ (*)
-begin
-    case (p3state)
-    A3:
-    begin
-        if (avalonWrite  == 1'b1) n3state <= B3;
-        else n3state <= A3;
-    end
-    B3:
-    begin
-        if (M_AXI_WREADY  == 1'b1) n3state <= C3;
-        else n3state <= B3;
-    end
-    C3:
-    begin
-        n3state <= A3;
-    end
-    default:
-    begin
-    end
-    endcase
-end
-//Write Response Handling
-assign wBready = (p4state == C4) ? 1'b1 : 1'b0;
-//assign wBready = (M_AXI_BVALID == 1'b1)? 1'b1 : 1'b0;
-
-always @ (posedge M_AXI_ACLK)
-begin
-    if(M_AXI_ARESETN == 1'b0)
-    begin
-    p4state <= A4;
-    end
-    else
-    begin
-    p4state <= n4state ;
-    end
-end
-always @ (*)
-begin
-    case (p4state)
-    A4:
-    begin
-        if (avalonWrite  == 1'b1) n4state <= B4;
-        else n4state <= A4;
-    end
-    B4:
-    begin
-        if (M_AXI_BVALID  == 1'b1) n4state <= C4;
-        else n4state <= B4;
-    end
-    C4:
-    begin
-        n4state <= A4;
-    end
-    default:
-    begin
-    end
-    endcase
-end
-
-// AXI Read Signal Handling
-//ARValid handling
-/*
-*******************************************************
-*/
-//TODO: ????
-assign wArvalid = (pstate == B) ? 1'b1 : 1'b0;
+assign wRReady = (CurrentState == READ_DONE) ? 1'b1: 1'b0;
 
 
-always @ (posedge M_AXI_ACLK)
-begin
-    if(M_AXI_ARESETN == 1'b0)
-    begin
-    pstate <= A;
-    end
-    else
-    begin
-    pstate <= nstate ;
-    end
-end
-always @ (*)
-begin
-    case (pstate)
-    A:
-    begin
-        if (avalonRead  == 1'b1) nstate <= B;
-        else nstate <= A;
-    end
-    B:
-    begin
-        if (M_AXI_ARREADY  == 1'b1) nstate <= C;
-        else nstate <= B;
-    end
-    C:
-    begin
-        nstate <= A;
-    end
-    default:
-    begin
-    end
-    endcase
-end
-
-/*
-*******************************************************
-*/
-/*
-always @ (posedge M_AXI_ACLK)
-begin
-    if(M_AXI_ARESETN == 1'b0)
-    begin
-        //Rready  <= 1'b0 ;
-        Arvalid <= 1'b0 ;
-    end
-    //else if ((M_AXI_ARREADY && M_AXI_RVALID) == 1'b1)
-    else if (M_AXI_ARREADY  == 1'b1)
-    begin
-        //Rready  <= 1'b0 ;
-        Arvalid <= 1'b0 ;
-    end
-    else if (avalonRead == 1'b1)
-    begin
-        //Rready  <= 1'b1 ;
-        Arvalid <= 1'b1 ;
-    end
-    else
-    begin
-        //Rready  <= Rready  ;
-        Arvalid <= Arvalid  ;
-    end
-end
-*/
-/*
-*******************************************************
-*/
-//TODO: ????
-//RReady Handling
-//assign wRready = (M_AXI_RVALID == 1'b1) ? 1'b0 :
-//                 (avalonRead == 1'b1) ? 1'b1 :1'b0 ;
-assign wRready = (pstate == B1) ? 1'b1 : 1'b0;
-
-
-always @ (posedge M_AXI_ACLK)
-begin
-    if(M_AXI_ARESETN == 1'b0)
-    begin
-    p1state <= A1;
-    end
-    else
-    begin
-    p1state <= n1state ;
-    end
-end
-always @ (*)
-begin
-    case (p1state)
-    A1:
-    begin
-        if (avalonRead  == 1'b1) n1state <= B1;
-        else n1state <= A1;
-    end
-    B1:
-    begin
-        if (M_AXI_RVALID  == 1'b1) n1state <= C1;
-        else n1state <= B1;
-    end
-    C1:
-    begin
-        n1state <= A1;
-    end
-    default:
-    begin
-    end
-    endcase
-end
-
-/*
-always @ (posedge M_AXI_ACLK)
-begin
-    if(M_AXI_ARESETN == 1'b0)
-    begin
-        rRready <= 1'b0;
-    end
-    else
-    begin
-        rRready <= wRready;
-    end
-end
-*/
-/*
-*******************************************************
-*/
-/*
-always @ (posedge M_AXI_ACLK)
-begin
-    if(M_AXI_ARESETN == 1'b0)
-    begin
-        Rready  <= 1'b0 ;
-        //Arvalid <= 1'b0 ;
-    end
-    //else if ((M_AXI_ARREADY && M_AXI_RVALID) == 1'b1)
-    else if (M_AXI_RVALID == 1'b1)
-    begin
-        Rready  <= 1'b0 ;
-        //Arvalid <= 1'b0 ;
-    end
-    else if (avalonRead == 1'b1)
-    begin
-        Rready  <= 1'b1 ;
-        //Arvalid <= 1'b1 ;
-    end
-    else
-    begin
-        Rready  <= Rready   ;
-        //Arvalid <= Arvalid ;
-    end
-end
-*/
-/*
-********************************************************************************
-*/
-assign start_transfer   =   (avalonRead || avalonWrite) ;
+assign start_transfer   =   ((avalonRead & ~wRReady) || avalonWrite) ;
 //assign done_transfer    =   (M_AXI_AWREADY && M_AXI_WREADY && M_AXI_BVALID) ||
 //                            (M_AXI_ARREADY && M_AXI_RVALID) ;
-assign done_transfer    =   M_AXI_BVALID || M_AXI_RVALID ;
+assign done_transfer    =   M_AXI_WREADY || (M_AXI_RVALID & wRReady) || rd_done ;
 //
 // Read Data Valid
 assign avalonReadValid   =  M_AXI_RVALID ;
@@ -439,5 +153,103 @@ assign avalonReadData   =   M_AXI_RDATA ;
 
 assign avalonWaitReq =  (done_transfer == 1'b1) ? 1'b0 :
                         (start_transfer == 1'b1)? 1'b1 :1'b0 ;
+
+
+//
+always @ (posedge M_AXI_ACLK)
+begin
+    if( M_AXI_ARESETN == 1'b0)
+    begin
+        rd_done <= 1'b0 ;
+    end
+    else
+    begin
+        rd_done <= (M_AXI_RVALID & wRReady) ;
+    end
+end
+// AXI master FSM
+always @ (posedge M_AXI_ACLK)
+begin
+    if(M_AXI_ARESETN == 1'b0)
+    begin
+    CurrentState <= INIT;
+    end
+    else
+    begin
+    CurrentState <= NextState ;
+    end
+end
+
+always @ (*)
+begin
+    NextState <= CurrentState ;
+
+    case (CurrentState)
+    INIT:
+    begin
+        if(avalonRead == 1'b1)
+            NextState <= ARVALID ;
+        else if (avalonWrite == 1'b1)
+            NextState <= AWVALID ;
+        else
+            NextState <= INIT ;
+    end
+    AWVALID:
+    begin
+        if(M_AXI_AWREADY  == 1'b1)
+            if(M_AXI_WREADY  == 1'b1)
+                if(M_AXI_BVALID  == 1'b1)
+                    NextState <= WRITE_DONE ;
+                else
+                    NextState <= BREADY ;
+            else
+                NextState <= WVALID ;
+        else
+            NextState <= AWVALID ;
+    end
+    WVALID:
+    begin
+        if(M_AXI_WREADY  == 1'b1)
+            if(M_AXI_BVALID  == 1'b1)
+                NextState <= WRITE_DONE ;
+            else
+                NextState <= BREADY ;
+        else
+            NextState <= WVALID ;
+    end
+    BREADY:
+    begin
+        if(M_AXI_BVALID  == 1'b1)
+            NextState <= WRITE_DONE ;
+        else
+            NextState <= BREADY ;
+    end
+    ARVALID:
+    begin
+        if(M_AXI_ARREADY == 1'b1)
+            if(M_AXI_RVALID == 1'b1)
+                NextState <= READ_DONE ;
+            else
+                NextState <= RREADY ;
+        else
+            NextState <= ARVALID ;
+    end
+    RREADY:
+    begin
+        if(M_AXI_RVALID == 1'b1)
+            NextState <= READ_DONE ;
+        else
+            NextState <= RREADY ;
+    end
+    WRITE_DONE:
+    begin
+        NextState <= INIT ;
+    end
+    READ_DONE:
+    begin
+        NextState <= INIT ;
+    end
+    endcase
+end
 
 endmodule

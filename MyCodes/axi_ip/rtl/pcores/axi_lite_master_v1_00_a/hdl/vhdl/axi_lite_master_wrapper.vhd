@@ -43,418 +43,179 @@ port
     M_AXI_RVALID        :   in      std_logic                                               ;
     M_AXI_RREADY        :   out     std_logic                                               ;
 
-    avalonRead          :   in      std_logic                                               ;
-    avalonWrite         :   in      std_logic                                               ;
-    avalonAddr          :   in      std_logic_vector   (31 downto 0)                        ;
-    avalonBE            :   in      std_logic_vector   (3 downto 0)                         ;
-    avalonBeginTransfer :   in      std_logic                                               ;
-    avalonWaitReq       :   out     std_logic                                               ; --TODO: Check this part
-    avalonReadValid     :   out     std_logic                                               ;
-    avalonReadData      :   out     std_logic_vector   (31 downto 0)                        ;
-    avalonWriteData     :   in      std_logic_vector   (31 downto 0)
+    iAvalonRead          :   in      std_logic                                               ;
+    iAvalonWrite         :   in      std_logic                                               ;
+    iAvalonAddr          :   in      std_logic_vector   (31 downto 0)                        ;
+    iAvalonBE            :   in      std_logic_vector   (3 downto 0)                         ;
+    oAvalonWaitReq       :   out     std_logic                                               ; --TODO: Check this part
+    oAvalonReadValid     :   out     std_logic                                               ;
+    oAvalonReadData      :   out     std_logic_vector   (31 downto 0)                        ;
+    iAvalonWriteData     :   in      std_logic_vector   (31 downto 0)
     );
 
 end axi_lite_master_wrapper;
 
 architecture Behavioral of axi_lite_master_wrapper is
 
-    type state  is (A,B,C)      ;
-    type state1 is (A1,B1,C1)   ;
-    type state2 is (A2,B2,C2)   ;
-    type state3 is (A3,B3,C3)   ;
-    type state4 is (A4,B4,C4)   ;
-
---  Write Address Channel
-    signal  Awvalid         :    std_logic  ;
-    signal  wAwvaliD        :    std_logic  ;
-
---  Write Data Channel
-    signal  Wvalid          :    std_logic  ;
-    signal  wWvalid         :    std_logic  ;
-
---  Write Response Channel
-    signal  Bready          :    std_logic  ;
-    signal  wBready         :    std_logic  ;
-
---  Read Address Channel
-    signal  Arvalid         :    std_logic  ;
-    signal  wArvalid        :    std_logic  ;
-
---  Read Data Channel
-    signal  Rready          :    std_logic  ;
-    signal  wRready         :    std_logic  ;
+type state  is (sINIT,sAWVALID,sWVALID,sBREADY,sARVALID,sRREADY,sWRITE_DONE,sREAD_DONE);
+signal  StateCurrent    :    state      ;
+signal  StateNext       :    state      ;
 
 --  Handle Avalon Master
     signal  start_transfer  :    std_logic  ;
     signal  done_transfer   :    std_logic  ;
-    signal  StateCurrent    :    state      ;
-    signal  StateNext       :    state      ;
-    signal  State1Current   :    state1     ;
-    signal  State1Next      :    state1     ;
-    signal  State2Current   :    state2     ;
-    signal  State2Next      :    state2     ;
-    signal  State3Current   :    state3     ;
-    signal  State3Next      :    state3     ;
-    signal  State4Current   :    state4     ;
-    signal  State4Next      :    state4     ;
-
+	signal  RReady			:    std_logic  ;
+	
+	signal	rd_done			:    std_logic  ;
 
 begin
---AXI Write Operations
+--AXI Master Operations
 
-    M_AXI_WVALID    <=  wWvalid   ;
-    M_AXI_AWVALID   <=  wAwvalid  ;
-    M_AXI_BREADY    <=  wBready   ;
+    M_AXI_AWPROT    <= "000"   ;
+    M_AXI_ARPROT    <= "000"    ;
 
---  AXI Read Operations
+    M_AXI_AWADDR    <= iAvalonAddr ;
+    M_AXI_ARADDR    <= iAvalonAddr ;
+    M_AXI_WDATA     <= iAvalonWriteData ;
+    M_AXI_WSTRB     <= iAvalonBE  ;
+--TODO: Read strobe ?
 
-    M_AXI_ARVALID   <=  wArvalid  ;
-    M_AXI_RREADY    <=  wRready   ;
+    M_AXI_AWVALID   <=  '1' when iAvalonWrite = '1' else
+                        '1' when StateCurrent = sAWVALID else
+                        '0';
 
---  Address & Data Valid AWVALID & WVALID
---  TODO: Combinational Feedback on systems , Not a good Idea ?
---  AWValid Handling
+    M_AXI_WVALID    <=  '1' when iAvalonWrite = '1' else
+                        '1' when StateCurrent = sAWVALID else
+                        '1' when StateCurrent = sWVALID else
+                        '0';
 
-AWVALID_HANDLE:
-    process (State2Current)
-    begin
-        if (State2Current = B2)
-        then
-            wAwvalid    <=  '1' ;
-        else
-            wAwvalid    <=  '0' ;
-        end if  ;
-    end process ;
-RESET_CHECK:
-    process (M_AXI_ACLK)
-    begin
-        if (rising_edge(M_AXI_ACLK))
-        then
-        if(M_AXI_ARESETN = '0')
-        then
-            State2Current <= A2          ;
-        else
-            State2Current <= State2Next  ;
-        end if  ;
-        end if  ;
-    end process ;
+    M_AXI_BREADY    <=  '1' when StateCurrent = sWRITE_DONE else
+                        '0';
 
-STATE2_FSM:
-    process (State2Current,avalonWrite,M_AXI_AWREADY)
-    begin
-        case (State2Current) is
-            when A2 =>
-                if (avalonWrite = '1')
-                then
-                    State2Next <= B2   ;
-                else
-                    State2Next <= A2   ;
-                end if  ;
-            when B2 =>
-                if (M_AXI_AWREADY = '1')
-                then
-                    State2Next <= C2   ;
-                else
-                    State2Next <= B2   ;
-                end if  ;
-            when C2 =>
-                State2Next <= A2   ;
-            when others =>
-
-        end case ;
-    end process ;
-
---  WValid Handling
---
-WRITE_VALID_HANDLE:
-    process (State3Current)
-    begin
-        if (State3Current = B3)
-        then
-            wWvalid    <=  '1' ;
-        else
-            wWvalid    <=  '0' ;
-        end if  ;
-    end process ;
-
-    process (M_AXI_ACLK)
-    begin
-        if (rising_edge(M_AXI_ACLK))
-        then
-        if(M_AXI_ARESETN = '0')
-        then
-            State3Current <= A3;
-        else
-            State3Current <= State3Next ;
-        end if  ;
-        end if  ;
-    end process ;
-
-STATE3_FSM:
-    process (State3Current, avalonWrite ,M_AXI_WREADY)
-    begin
-        case (State3Current)is
-            when A3 =>
-                if (avalonWrite  = '1' )
-                then
-                    State3Next <= B3   ;
-                else
-                    State3Next <= A3   ;
-                end if  ;
-            when B3 =>
-                if (M_AXI_WREADY  = '1' )
-                then
-                    State3Next <= C3   ;
-                else
-                    State3Next <= B3   ;
-                end if  ;
-            when C3 =>
-                State3Next <= A3;
-            when others =>
-        end case ;
-    end process ;
-
---  Write Response Handling
-WRITE_RESP_HANDLE:
-    process (State4Current)
-    begin
-        if (State4Current = B4)
-        then
-            wBready    <=  '1' ;
-        else
-            wBready    <=  '0' ;
-        end if  ;
-    end process ;
-
-    process ( M_AXI_ACLK )
-    begin
-        if (rising_edge( M_AXI_ACLK ))
-        then
-        if(M_AXI_ARESETN = '0')
-        then
-            State4Current <= A4         ;
-        else
-            State4Current <= State4Next ;
-        end if  ;
-        end if  ;
-    end process ;
-
-STATE4_FSM:
-    process (State4Current, avalonWrite, M_AXI_BVALID)
-    begin
-        case (State4Current) is
-            when A4 =>
-                if (avalonWrite  = '1')
-                then
-                    State4Next <= B4   ;
-                else
-                    State4Next <= A4   ;
-                end if  ;
-            when B4 =>
-                if (M_AXI_BVALID  = '1')
-                then
-                    State4Next <= C4   ;
-                else
-                    State4Next <= B4   ;
-                end if  ;
-            when C4 =>
-                State4Next <= A4;
-            when others =>
-         end case ;
-    end process ;
-
---  AXI Read Signal Handling
---  ARValid handling
-
---  TODO: ????
---
-ADDR_READ_HANDLE:
-    process (StateCurrent )
-    begin
-        if (StateCurrent = B)
-        then
-            wArvalid    <=  '1' ;
-        else
-            wArvalid    <=  '0' ;
-        end if  ;
-    end process ;
-
-    process ( M_AXI_ACLK )
-    begin
-        if (rising_edge(M_AXI_ACLK))
-        then
-        if(M_AXI_ARESETN = '0')
-        then
-            StateCurrent <= A ;
-        else
-            StateCurrent <= StateNext ;
-        end if ;
-        end if ;
-    end process ;
-
-    process ( StateCurrent, avalonRead, M_AXI_ARREADY)
-    begin
-        case (StateCurrent) is
-            when A =>
-                if (avalonRead  = '1' )
-                then
-                    StateNext <= B ;
-                else
-                    StateNext <= A ;
-                end if ;
-            when B =>
-                if (M_AXI_ARREADY  = '1' )
-                then
-                    StateNext <= C ;
-                else
-                    StateNext <= B ;
-                end if ;
-            when C =>
-                StateNext <= A ;
-            when others =>
-        end case ;
-    end process ;
-
-    process ( M_AXI_ACLK )
-    begin
-        if (rising_edge(M_AXI_ACLK))
-        then
-        if (M_AXI_ARESETN = '0')
-        then
-            Arvalid <= '0' ;
-        elsif (M_AXI_ARREADY  = '1')
-        then
-            Arvalid <= '0' ;
-        elsif (avalonRead = '1')
-        then
-            Arvalid <= '1' ;
-        else
-            Arvalid <= Arvalid  ;
-        end if ;
-        end if ;
-    end process ;
-
---  TODO: ????
---  RReady Handling
---
-READ_READY_HANDLE:
-    process (StateCurrent)
-    begin
-        if (StateCurrent = B1)
-        then
-            wRready    <=  '1' ;
-        else
-            wRready    <=  '0' ;
-        end if  ;
-    end process ;
-
-    process ( M_AXI_ACLK )
-    begin
-        if (rising_edge(M_AXI_ACLK))
-        then
-        if(M_AXI_ARESETN = '0')
-        then
-            State1Current <= A1 ;
-        else
-            State1Current <= State1Next ;
-        end if ;
-        end if ;
-    end process ;
-
-STATE1_FSM:
-    process ( State1Current,avalonRead,M_AXI_RVALID )
-    begin
-        case (State1Current) is
-            when A1 =>
-                if (avalonRead  = '1')
-                then
-                    State1Next <= B1   ;
-                else
-                    State1Next <= A1   ;
-                end if ;
-            when B1 =>
-                if (M_AXI_RVALID = '1')
-                then
-                    State1Next <= C1   ;
-                else
-                    State1Next <= B1   ;
-                end if ;
-            when C1 =>
-                State1Next <= A1       ;
-            when others =>
-         end case ;
-     end process ;
-
-    process (M_AXI_ACLK)
-    begin
-        if (rising_edge(M_AXI_ACLK))
-        then
-        if(M_AXI_ARESETN = '0')
-        then
-            Rready  <= '0' ;
-        elsif ( M_AXI_RVALID = '1' )
-        then
-            Rready  <= '0' ;
-            --Arvalid <= '0' ;
-        elsif (avalonRead = '1')
-        then
-            Rready  <= '1' ;
-            --Arvalid <= '1' ;
-        else
-            Rready  <= Rready   ;
-            --Arvalid <= Arvalid ;
-        end if ;
-        end if ;
-    end process ;
-
-
-    start_transfer  <=   avalonRead or avalonWrite      ;
-
-    done_transfer   <=   M_AXI_BVALID or M_AXI_RVALID   ;
---
+    M_AXI_ARVALID   <=  '1' when iAvalonRead = '1' else
+                        '1' when StateCurrent =  sARVALID else
+                        '0' ; 
+    M_AXI_RREADY    <=  '1' when StateCurrent = sREAD_DONE else
+                        '0';
+  
 --  Read Data Valid
-
-    avalonReadValid <=  M_AXI_RVALID    ;
-
+    oAvalonReadValid <=  M_AXI_RVALID    ;
 --  Read Data
-
-    avalonReadData  <=   M_AXI_RDATA    ;
+    oAvalonReadData  <=   M_AXI_RDATA    ;
 
 --  Wait Request
 --  Combinational Feedback through a flop //TODO: Check wethert its create dead loops
-AVALON_WAIT_REQ:
-    process (done_transfer,start_transfer)
+    oAvalonWaitReq <= '0' when done_transfer = '1' else
+                      '1' when  start_transfer = '1' else
+                      '0' ;
+
+--
+--
+	RReady			<= '1' when StateCurrent = sREAD_DONE else
+					   '0'
+	
+    start_transfer  <=   (iAvalonRead and not RReady) or iAvalonWrite      ;
+    done_transfer   <=   M_AXI_WREADY or (M_AXI_RVALID and RReady) or rd_done   ;
+	
+	process (M_AXI_ACLK, M_AXI_ARESETN)
     begin
-        if (done_transfer = '1' )
-        then
-            avalonWaitReq   <=  '0'  ;
-        elsif (start_transfer = '1' )
-        then
-            avalonWaitReq   <=  '1'  ;
-        else
-            avalonWaitReq   <=  '0'  ;
-        end if;
+     if rising_edge (M_AXI_ACLK) then
+      if(M_AXI_ARESETN = '0') then
+        rd_done <= '0'    ;
+      else
+        rd_done <= (M_AXI_RVALID and RReady)  ;
+      end if;
+     end if;
     end process;
+	
+-- Master FSM	
+-- Sequenctial Logics
+    process (M_AXI_ACLK, M_AXI_ARESETN)
+    begin
+     if rising_edge (M_AXI_ACLK) then
+      if(M_AXI_ARESETN = '0') then
+        StateCurrent <= sINIT    ;
+      else
+        StateCurrent <= StateNext ;
+      end if;
+     end if;
+    end process;
+-- Combinational Logics
+    process (
+               StateCurrent,
+               iAvalonRead,
+               iAvalonWrite,
+               M_AXI_AWREADY,
+               M_AXI_WREADY,
+               M_AXI_BVALID,
+               M_AXI_ARREADY,
+               M_AXI_RVALID
+            )
+    begin
+        StateNext <= StateCurrent ;
+        case (StateCurrent) is 
+         when sINIT =>
+            if (iAvalonRead = '1') then
+                StateNext   <= sARVALID ;
+					elsif (iAvalonWrite = '1') then
+                StateNext   <= sAWVALID ;
+            else
+                StateNext <= sINIT ;
+            end if;
+         when sAWVALID =>
+            if(M_AXI_AWREADY = '1') then
+                if (M_AXI_WREADY = '1') then
+                    if (M_AXI_BVALID = '1') then
+                        StateNext   <= sWRITE_DONE ;
+                    else
+                        StateNext   <= sBREADY ;
+                    end if;
+                else
+                    StateNext   <= sWVALID ;
+                end if;
+            else
+                StateNext   <= sAWVALID ;
+            end if;
 
---
---  Avalon Bus master Interface
---
-
-    MASTER: entity work.avalon_master
-            port map
-                (
-                  iClk                  =>  ACLK                    ,
-                  iResetn               =>  ARESETN                 ,
-                  avalonRead            =>  avalonRead              ,
-                  avalonWrite           =>  avalonWrite             ,
-                  avalonAddr            =>  avalonAddr              ,
-                  avalonBE              =>  avalonBE                ,
-                  avalonBeginTransfer   =>  avalonBeginTransfer     ,
-                  avalonWaitReq         =>  avalonWaitReq           ,
-                  avalonReadValid       =>  avalonReadValid         ,
-                  avalonReadData        =>  avalonReadData          ,
-                  avalonWriteData       =>  avalonWriteData
-                 );
+         when sWVALID  =>
+            if (M_AXI_WREADY = '1') then
+                if (M_AXI_BVALID = '1') then
+                StateNext   <= sWRITE_DONE ;
+                else
+                StateNext   <= sBREADY ;
+                end if;
+            else
+                StateNext   <= sWVALID ;
+            end if;
+         when sBREADY  =>
+            if (M_AXI_BVALID = '1') then
+                StateNext   <= sWRITE_DONE ;
+            else
+                StateNext   <= sBREADY ;
+            end if;
+         when sARVALID =>
+            if(M_AXI_ARREADY = '1') then
+                if(M_AXI_RVALID = '1') then
+                    StateNext   <= sREAD_DONE ;
+                else
+                    StateNext   <= sRREADY ;
+                end if;
+            else
+                StateNext   <= sARVALID ;
+            end if;
+         when sRREADY  =>
+            if(M_AXI_RVALID = '1') then
+                StateNext   <= sREAD_DONE ;
+            else
+                StateNext   <= sRREADY ;
+            end if;
+         when sWRITE_DONE    =>
+                StateNext <= sINIT ;
+         when sREAD_DONE    =>
+                StateNext <= sINIT ;
+         when others => null;
+        end case;
+    end process;
 
 end Behavioral;
 

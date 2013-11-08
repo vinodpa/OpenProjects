@@ -89,5 +89,23 @@ PORT M_AXI_RREADY = RREADY, BUS = M_AXI, DIR = O
 
 #Example Ports
 #PORT DONE_SUCCESS = "", DIR = O
-
+PORT test_RValid = "", DIR = O
+PORT test_RReady = "", DIR = O
+PORT test_Arvalid  = "", DIR = O
+PORT test_Arready  = "", DIR = O
+PORT test_Bready = "", DIR = O
+PORT test_Bvalid = "", DIR = O
+PORT test_Wvalid = "", DIR = O
+PORT test_Wready = "", DIR = O
+PORT test_Awvalid = "", DIR = O
+PORT test_Awready = "", DIR = O
+PORT test_wait = "", DIR = O
+PORT test_read = "", DIR = O
+PORT test_write = "", DIR = O
+PORT test_awaddr = "", DIR = O, VEC =[31:0]
+PORT test_wdata = "", DIR = O, VEC =[31:0]
+PORT test_araddr	= "", DIR = O, VEC =[31:0]
+PORT test_rdata	= "", DIR = O, VEC =[31:0]
+PORT test_avm_state = "", DIR = O, VEC =[1:0]
+PORT read_write = "",DIR = I
 END
