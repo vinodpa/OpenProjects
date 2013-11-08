@@ -95,7 +95,7 @@ reg             nRvalid     ;
 //Port Assignments
 assign oAvsPcpAddress      = address        ;
 assign oAvsPcpByteenable   = byte_enable    ;
-assign oAvsPcpRead         = S_AXI_RREADY   ;
+assign oAvsPcpRead         = S_AXI_ARVALID   ;
 assign oAvsPcpWrite        = S_AXI_WVALID   ;
 assign oAvsPcpWritedata    = S_AXI_WDATA    ;
 //assign iAvsPcpWaitrequest
@@ -194,18 +194,18 @@ begin
              nAwready   <= 1'b0 ;
              nWready    <= 1'b0 ;
 
-             if( S_AXI_RREADY == 1'b1 )
-             begin
+             //if( S_AXI_RREADY == 1'b1 )
+             //begin
              nArready   <= 1'b1 ;
              nRvalid    <= 1'b1 ;
              nState     <= DELAY ;
-             end
-             else
-             begin
-             nArready   <= 1'b0 ;
-             nRvalid    <= 1'b0 ;
-             nState     <= READ ;
-             end
+             //end
+             //else
+             //begin
+             //nArready   <= 1'b0 ;
+             //nRvalid    <= 1'b0 ;
+             //nState     <= READ ;
+             //end
             end
         WRITE:
             begin
