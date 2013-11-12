@@ -51,15 +51,17 @@ entity axi_hostinterface is
     generic (
         --AXI Lite Slave PCP Interface
         C_BASEADDR         : std_logic_vector(31 downto 0) := x"00000000"; --TODO: Rename
-        C_HIGHADDR         : std_logic_vector(31 downto 0) := x"0000ffff"; --TODO: Rename
+        C_HIGHADDR         : std_logic_vector(31 downto 0) := x"ffffffff"; --TODO: Rename
         C_S_AXI_ADDR_WIDTH : integer                       := 32; --TODO: Rename
         C_S_AXI_DATA_WIDTH : integer                       := 32; --TODO: Rename
         --AXI Lite Slave Host Interface
---        C_HOST_BASEADDR         : std_logic_vector(31 downto 0) := x"00000000";
---        C_HOST_HIGHADDR         : std_logic_vector(31 downto 0) := x"0000ffff";
---        C_S_HOST_AXI_ADDR_WIDTH : integer                       := 32;
---        C_S_HOST_AXI_DATA_WIDTH : integer                       := 32;
+        C_HOST_BASEADDR         : std_logic_vector(31 downto 0) := x"00000000";
+        C_HOST_HIGHADDR         : std_logic_vector(31 downto 0) := x"ffffffff";
+        C_S_HOST_AXI_ADDR_WIDTH : integer                       := 32;
+        C_S_HOST_AXI_DATA_WIDTH : integer                       := 32;
         ----Host Interface Parameters
+        C_M_AXI_ADDR_WIDTH : integer                       := 32    ;
+        C_M_AXI_DATA_WIDTH : integer                       := 32    ;
         --! Version major
         gVersionMajor       : natural := 16#FF#;
         --! Version minor
@@ -138,48 +140,66 @@ entity axi_hostinterface is
 
         -- Avalon Memory Mapped Slave for Host
         -- System Signals
---        HOST_ACLK            :   in  std_logic                                        ;
---        HOST_ARESETN         :   in  std_logic                                        ;
+        HOST_ACLK            :   in  std_logic                                        ;
+        HOST_ARESETN         :   in  std_logic                                        ;
         -- Slave Interface Write Address Ports
---        S_HOST_AXI_AWADDR    :   in  std_logic_vector (C_S_AXI_ADDR_WIDTH -1 downto 0);
---        S_HOST_AXI_AWPROT    :   in  std_logic_vector ( 2 downto 0)                   ;
---        S_HOST_AXI_AWVALID   :   in  std_logic                                        ;
---        S_HOST_AXI_AWREADY   :   out std_logic                                        ;
+        S_HOST_AXI_AWADDR    :   in  std_logic_vector (C_S_AXI_ADDR_WIDTH -1 downto 0);
+        S_HOST_AXI_AWPROT    :   in  std_logic_vector ( 2 downto 0)                   ;
+        S_HOST_AXI_AWVALID   :   in  std_logic                                        ;
+        S_HOST_AXI_AWREADY   :   out std_logic                                        ;
         -- Slave Interface Write Data Ports
---        S_HOST_AXI_WDATA     :   in  std_logic_vector (C_S_AXI_DATA_WIDTH-1 downto 0) ;
---        S_HOST_AXI_WSTRB     :   in  std_logic_vector (C_S_AXI_DATA_WIDTH/8-1 downto 0);
---        S_HOST_AXI_WVALID    :   in  std_logic                                        ;
---        S_HOST_AXI_WREADY    :   out std_logic                                        ;
+        S_HOST_AXI_WDATA     :   in  std_logic_vector (C_S_AXI_DATA_WIDTH-1 downto 0) ;
+        S_HOST_AXI_WSTRB     :   in  std_logic_vector (C_S_AXI_DATA_WIDTH/8-1 downto 0);
+        S_HOST_AXI_WVALID    :   in  std_logic                                        ;
+        S_HOST_AXI_WREADY    :   out std_logic                                        ;
         -- Slave Interface Write Response Ports
---        S_HOST_AXI_BRESP     :   out std_logic_vector (1 downto 0)                    ;
---        S_HOST_AXI_BVALID    :   out std_logic                                        ;
---        S_HOST_AXI_BREADY    :   in  std_logic                                        ;
+        S_HOST_AXI_BRESP     :   out std_logic_vector (1 downto 0)                    ;
+        S_HOST_AXI_BVALID    :   out std_logic                                        ;
+        S_HOST_AXI_BREADY    :   in  std_logic                                        ;
         -- Slave Interface Read Address Ports
---        S_HOST_AXI_ARADDR    :   in  std_logic_vector (C_S_AXI_ADDR_WIDTH -1 downto 0);
---        S_HOST_AXI_ARPROT    :   in  std_logic_vector (2 downto 0)                    ;
---        S_HOST_AXI_ARVALID   :   in  std_logic                                        ;
---        S_HOST_AXI_ARREADY   :   out std_logic                                        ;
+        S_HOST_AXI_ARADDR    :   in  std_logic_vector (C_S_AXI_ADDR_WIDTH -1 downto 0);
+        S_HOST_AXI_ARPROT    :   in  std_logic_vector (2 downto 0)                    ;
+        S_HOST_AXI_ARVALID   :   in  std_logic                                        ;
+        S_HOST_AXI_ARREADY   :   out std_logic                                        ;
         -- Slave Interface Read Data Ports
---        S_HOST_AXI_RDATA     :   out std_logic_vector (C_S_AXI_DATA_WIDTH-1 downto 0) ;
---        S_HOST_AXI_RRESP     :   out std_logic_vector (1 downto 0)                    ;
---        S_HOST_AXI_RVALID    :   out std_logic                                        ;
---        S_HOST_AXI_RREADY    :   in  std_logic                                        ;
+        S_HOST_AXI_RDATA     :   out std_logic_vector (C_S_AXI_DATA_WIDTH-1 downto 0) ;
+        S_HOST_AXI_RRESP     :   out std_logic_vector (1 downto 0)                    ;
+        S_HOST_AXI_RVALID    :   out std_logic                                        ;
+        S_HOST_AXI_RREADY    :   in  std_logic                                        ;
 
         -- Avalon Memory Mapped Master for Host via Magic Bridge
-        --! Avalon-MM master hostBridge address
-        avm_hostBridge_address          : out std_logic_vector(29 downto 0);
-        --! Avalon-MM master hostBridge byteenable
-        avm_hostBridge_byteenable       : out std_logic_vector(3 downto 0);
-        --! Avalon-MM master hostBridge read
-        avm_hostBridge_read             : out std_logic;
-        --! Avalon-MM master hostBridge readdata
-        avm_hostBridge_readdata         : in std_logic_vector(31 downto 0);
-        --! Avalon-MM master hostBridge write
-        avm_hostBridge_write            : out std_logic;
-        --! Avalon-MM master hostBridge writedata
-        avm_hostBridge_writedata        : out std_logic_vector(31 downto 0);
-        --! Avalon-MM master hostBridge waitrequest
-        avm_hostBridge_waitrequest      : in std_logic;
+          -- System Signals
+        M_AXI_ACLK          :   in      std_logic                                               ;
+        M_AXI_ARESETN       :   in      std_logic                                               ;
+
+        -- Master Interface Write Address
+        M_AXI_AWADDR        :   out     std_logic_vector   (C_M_AXI_ADDR_WIDTH-1 downto 0)      ;
+        M_AXI_AWPROT        :   out     std_logic_vector   (3-1 downto 0)                       ;
+        M_AXI_AWVALID       :   out     std_logic                                               ;
+        M_AXI_AWREADY       :   in      std_logic                                               ;
+
+        -- Master Interface Write Data
+        M_AXI_WDATA         :   out     std_logic_vector   (C_M_AXI_DATA_WIDTH-1 downto 0)      ;
+        M_AXI_WSTRB         :   out     std_logic_vector   (C_M_AXI_DATA_WIDTH/8-1 downto 0)    ;
+        M_AXI_WVALID        :   out     std_logic                                               ;
+        M_AXI_WREADY        :   in      std_logic                                               ;
+
+        -- Master Interface Write Response
+        M_AXI_BRESP         :   in      std_logic_vector   (2-1 downto 0)                       ;
+        M_AXI_BVALID        :   in      std_logic                                               ;
+        M_AXI_BREADY        :   out     std_logic                                               ;
+
+        -- Master Interface Read Address
+        M_AXI_ARADDR        :   out     std_logic_vector   (C_M_AXI_ADDR_WIDTH-1 downto 0)      ;
+        M_AXI_ARPROT        :   out     std_logic_vector   (3-1 downto 0)                       ;
+        M_AXI_ARVALID       :   out     std_logic                                               ;
+        M_AXI_ARREADY       :   in      std_logic                                               ;
+
+        -- Master Interface Read Data
+        M_AXI_RDATA         :   in      std_logic_vector   (C_M_AXI_DATA_WIDTH-1 downto 0)      ;
+        M_AXI_RRESP         :   in      std_logic_vector   (2-1 downto 0)                       ;
+        M_AXI_RVALID        :   in      std_logic                                               ;
+        M_AXI_RREADY        :   out     std_logic                                               ;
         --! Interrupt receiver
         inr_irqSync_irq                 : in std_logic;
         --! Interrupt sender
@@ -249,6 +269,14 @@ architecture rtl of axi_hostinterface is
     signal  AvsHostWritedata    :  std_logic_vector   (31 downto 0);
     signal  AvsHostReaddata     :  std_logic_vector   (31 downto 0);
     signal  AvsHostWaitrequest  :  std_logic   ;
+	 
+	 signal  avm_hostBridge_address          : std_logic_vector(31 downto 0);
+    signal  avm_hostBridge_byteenable       : std_logic_vector(3 downto 0);
+    signal  avm_hostBridge_read             : std_logic;
+    signal  avm_hostBridge_readdata         : std_logic_vector(31 downto 0);
+    signal  avm_hostBridge_write            : std_logic;
+    signal  avm_hostBridge_writedata        : std_logic_vector(31 downto 0);
+    signal  avm_hostBridge_waitrequest      : std_logic;
     
     --Few Cheating Handlors
     signal csi_c0_clock          : std_logic;
@@ -258,65 +286,65 @@ architecture rtl of axi_hostinterface is
 begin
 
     -- Cheat code
+    -- TODO: Handle Clock & Reset Correctly
     csi_c0_clock     <=  PCP_ACLK ;
     rsi_r0_reset    <=  PCP_ARESETN ;
     --! Assign the host side to Avalon
     genAvalon : if gHostIfType = 0 generate
     begin
        --    --TODO: Port Naming Conflits has to fix
---    AxiLiteSlaveWrapperAP: entity work.axi_lite_slave_wrapper
---    generic map (
---            C_BASEADDR         => C_HOST_BASEADDR ,
---            C_HIGHADDR         => C_HOST_HIGHADDR ,
---            C_S_AXI_ADDR_WIDTH => C_S_AXI_ADDR_WIDTH ,
---            C_S_AXI_DATA_WIDTH => C_S_AXI_DATA_WIDTH
---    )
---    port map
---    (
---            -- System Signals
---            ACLK            =>  HOST_ACLK    ,
---            ARESETN         =>  HOST_ARESETN ,
---            -- Slave Interface Write Address Ports
---            S_AXI_AWADDR    =>  S_HOST_AXI_AWADDR    ,
---            S_AXI_AWPROT    =>  S_HOST_AXI_AWPROT    ,
---            S_AXI_AWVALID   =>  S_HOST_AXI_AWVALID   ,
---            S_AXI_AWREADY   =>  S_HOST_AXI_AWREADY   ,
---            -- Slave Interface Write Data Ports
---            S_AXI_WDATA     =>  S_HOST_AXI_WDATA     ,
---            S_AXI_WSTRB     =>  S_HOST_AXI_WSTRB     ,
---            S_AXI_WVALID    =>  S_HOST_AXI_WVALID    ,
---            S_AXI_WREADY    =>  S_HOST_AXI_WREADY    ,
---            -- Slave Interface Write Response Ports
---            S_AXI_BRESP     =>  S_HOST_AXI_BRESP     ,
---            S_AXI_BVALID    =>  S_HOST_AXI_BVALID    ,
---            S_AXI_BREADY    =>  S_HOST_AXI_BREADY    ,
---            -- Slave Interface Read Address Ports
---            S_AXI_ARADDR    =>  S_HOST_AXI_ARADDR    ,
---            S_AXI_ARPROT    =>  S_HOST_AXI_ARPROT    ,
---            S_AXI_ARVALID   =>  S_HOST_AXI_ARVALID   ,
---            S_AXI_ARREADY   =>  S_HOST_AXI_ARREADY   ,
+    AxiLiteSlaveWrapperAP: entity work.axi_lite_slave_wrapper
+    generic map (
+            C_BASEADDR         => C_HOST_BASEADDR ,
+            C_HIGHADDR         => C_HOST_HIGHADDR ,
+            C_S_AXI_ADDR_WIDTH => C_S_AXI_ADDR_WIDTH ,
+            C_S_AXI_DATA_WIDTH => C_S_AXI_DATA_WIDTH
+    )
+    port map
+    (
+            -- System Signals
+            ACLK            =>  HOST_ACLK    ,
+            ARESETN         =>  HOST_ARESETN ,
+            -- Slave Interface Write Address Ports
+            S_AXI_AWADDR    =>  S_HOST_AXI_AWADDR    ,
+            S_AXI_AWPROT    =>  S_HOST_AXI_AWPROT    ,
+            S_AXI_AWVALID   =>  S_HOST_AXI_AWVALID   ,
+            S_AXI_AWREADY   =>  S_HOST_AXI_AWREADY   ,
+            -- Slave Interface Write Data Ports
+            S_AXI_WDATA     =>  S_HOST_AXI_WDATA     ,
+            S_AXI_WSTRB     =>  S_HOST_AXI_WSTRB     ,
+            S_AXI_WVALID    =>  S_HOST_AXI_WVALID    ,
+            S_AXI_WREADY    =>  S_HOST_AXI_WREADY    ,
+            -- Slave Interface Write Response Ports
+            S_AXI_BRESP     =>  S_HOST_AXI_BRESP     ,
+            S_AXI_BVALID    =>  S_HOST_AXI_BVALID    ,
+            S_AXI_BREADY    =>  S_HOST_AXI_BREADY    ,
+            -- Slave Interface Read Address Ports
+            S_AXI_ARADDR    =>  S_HOST_AXI_ARADDR    ,
+            S_AXI_ARPROT    =>  S_HOST_AXI_ARPROT    ,
+            S_AXI_ARVALID   =>  S_HOST_AXI_ARVALID   ,
+            S_AXI_ARREADY   =>  S_HOST_AXI_ARREADY   ,
 --            -- Slave Interface Read Data Ports
---            S_AXI_RDATA     =>  S_HOST_AXI_RDATA     ,
---            S_AXI_RRESP     =>  S_HOST_AXI_RRESP     ,
---            S_AXI_RVALID    =>  S_HOST_AXI_RVALID    ,
---            S_AXI_RREADY    =>  S_HOST_AXI_RREADY    ,
---            --Avalon Interface
---            oAvsAddress  =>  AvsHostAddress   ,
---            oAvsByteenable =>    AvsHostByteenable ,
---            oAvsRead     =>  AvsHostRead      ,
---            oAvsWrite    =>  AvsHostWrite     ,
---            oAvsWritedata => AvsHostWritedata ,
---            iAvsReaddata =>  AvsHostReaddata  ,
---            iAvsWaitrequest =>   AvsHostWaitrequest
---    );
---      host_address    <=  AvsHostAddress (16 downto 0) ;
---      host_byteenable <=  AvsHostByteenable           ;
---      host_Read       <=  AvsHostRead                 ;
---      host_write      <=  AvsHostWrite                ;
---      host_writedata  <=  AvsHostWritedata            ;
---      AvsHostWaitrequest <= host_waitrequest          ;
---      AvsHostReaddata <=  host_readdata            ;
---
+            S_AXI_RDATA     =>  S_HOST_AXI_RDATA     ,
+            S_AXI_RRESP     =>  S_HOST_AXI_RRESP     ,
+            S_AXI_RVALID    =>  S_HOST_AXI_RVALID    ,
+            S_AXI_RREADY    =>  S_HOST_AXI_RREADY    ,
+            --Avalon Interface
+            oAvsAddress  =>  AvsHostAddress   ,
+            oAvsByteenable =>    AvsHostByteenable ,
+            oAvsRead     =>  AvsHostRead      ,
+            oAvsWrite    =>  AvsHostWrite     ,
+            oAvsWritedata => AvsHostWritedata ,
+            iAvsReaddata =>  AvsHostReaddata  ,
+            iAvsWaitrequest =>   AvsHostWaitrequest
+    );
+      host_address    <=  AvsHostAddress (16 downto 2) ; --TODO:Recheck width
+      host_byteenable <=  AvsHostByteenable           ;
+      host_Read       <=  AvsHostRead                 ;
+      host_write      <=  AvsHostWrite                ;
+      host_writedata  <=  AvsHostWritedata            ;
+      AvsHostWaitrequest <= host_waitrequest          ;
+      AvsHostReaddata <=  host_readdata            ;
     end generate;
 
     --! Assign the host side to Parallel
@@ -363,6 +391,7 @@ begin
             );
 
         -- tri-state buffers
+        -- TODO: Clean UP
         -- Removed for Xilinx Design
         --coe_parHost_data <= hostData_o when hostData_en = cActivated else
          --                   (others => 'Z');
@@ -374,7 +403,8 @@ begin
         coe_parHost_data_O <= hostData_o ;
         coe_parHost_data_T <= hostData_en ;
 
-         -- Removed for Xilinx Design
+        -- Removed for Xilinx Design
+        -- TODO: Clean UP
         --coe_parHost_addressData <= hostAddressData_o when hostAddressData_en = cActivated else
         --                           (others => 'Z');
 
@@ -426,7 +456,7 @@ begin
         iPcpWrite              => AvsPcpWrite,
         iPcpWritedata          => AvsPcpWritedata,
         oPcpWaitrequest        => AvsPcpWaitrequest,
-        oHostBridgeAddress     => avm_hostBridge_address,           --TODO: Rename Ports
+        oHostBridgeAddress     => avm_hostBridge_address(29 downto 0),           --TODO: Rename Ports
         oHostBridgeByteenable  => avm_hostBridge_byteenable,
         oHostBridgeRead        => avm_hostBridge_read,
         iHostBridgeReaddata    => avm_hostBridge_readdata,
@@ -486,6 +516,58 @@ begin
             oAvsWritedata => AvsPcpWritedata ,
             iAvsReaddata =>  AvsPcpReaddata  ,
             iAvsWaitrequest =>   AvsPcpWaitrequest
+    );
+    
+    --Master AXI wrapper for memory based communication
+    AxiLiteMasterWrapperPCP:   entity work.axi_lite_master_wrapper
+    generic map
+    (
+            C_M_AXI_ADDR_WIDTH      => C_M_AXI_ADDR_WIDTH,--: integer                       := 32;
+            C_M_AXI_DATA_WIDTH      => C_M_AXI_DATA_WIDTH--: integer                       := 32
+    )
+    port map
+    (
+            -- System Signals
+            M_AXI_ACLK              =>  M_AXI_ACLK, --:   in      std_logic                                               ;
+            M_AXI_ARESETN           =>  M_AXI_ARESETN, --:   in      std_logic                                               ;
+
+            -- Master Interface Write Address
+            M_AXI_AWADDR            =>  M_AXI_AWADDR,   --:   out     std_logic_vector   (C_M_AXI_ADDR_WIDTH-1 downto 0)      ;
+            M_AXI_AWPROT            =>  M_AXI_AWPROT,   --:   out     std_logic_vector   (3-1 downto 0)                       ;
+            M_AXI_AWVALID           =>  M_AXI_AWVALID,  --:   out     std_logic                                               ;
+            M_AXI_AWREADY           =>  M_AXI_AWREADY,  --:   in      std_logic                                               ;
+
+            -- Master Interface Write Data
+            M_AXI_WDATA             =>  M_AXI_WDATA ,   --:   out     std_logic_vector   (C_M_AXI_DATA_WIDTH-1 downto 0)      ;
+            M_AXI_WSTRB             =>  M_AXI_WSTRB ,   --:   out     std_logic_vector   (C_M_AXI_DATA_WIDTH/8-1 downto 0)    ;
+            M_AXI_WVALID            =>  M_AXI_WVALID,   --:   out     std_logic                                               ;
+            M_AXI_WREADY            =>  M_AXI_WREADY,   --:   in      std_logic                                               ;
+
+            -- Master Interface Write Response
+            M_AXI_BRESP             =>  M_AXI_BRESP,    --:   in      std_logic_vector   (2-1 downto 0)                       ;
+            M_AXI_BVALID            =>  M_AXI_BVALID,   --:   in      std_logic                                               ;
+            M_AXI_BREADY            =>  M_AXI_BREADY,   --:   out     std_logic                                               ;
+
+            -- Master Interface Read Address
+            M_AXI_ARADDR            =>  M_AXI_ARADDR,   --:   out     std_logic_vector   (C_M_AXI_ADDR_WIDTH-1 downto 0)      ;
+            M_AXI_ARPROT            =>  M_AXI_ARPROT,   --:   out     std_logic_vector   (3-1 downto 0)                       ;
+            M_AXI_ARVALID           =>  M_AXI_ARVALID,  --:   out     std_logic                                               ;
+            M_AXI_ARREADY           =>  M_AXI_ARREADY,  --:   in      std_logic                                               ;
+
+            -- Master Interface Read Data
+            M_AXI_RDATA             =>  M_AXI_RDATA,    --:   in      std_logic_vector   (C_M_AXI_DATA_WIDTH-1 downto 0)      ;
+            M_AXI_RRESP             =>  M_AXI_RRESP,    --:   in      std_logic_vector   (2-1 downto 0)                       ;
+            M_AXI_RVALID            =>  M_AXI_RVALID,   --:   in      std_logic                                               ;
+            M_AXI_RREADY            =>  M_AXI_RREADY,   --:   out     std_logic                                               ;
+
+            iAvalonRead              =>  avm_hostBridge_read,     --:   in      std_logic                                               ;
+            iAvalonWrite             =>  avm_hostBridge_write,    --:   in      std_logic                                               ;
+            iAvalonAddr              =>  avm_hostBridge_address,     --:   in      std_logic_vector   (31 downto 0)                        ;
+            iAvalonBE                =>  avm_hostBridge_byteenable,       --:   in      std_logic_vector   (3 downto 0)                         ;
+            oAvalonWaitReq           =>  avm_hostBridge_waitrequest,  --:   out     std_logic                                               ; --TODO: Check this part
+            oAvalonReadValid         =>  open,    --:   out     std_logic                                               ;
+            oAvalonReadData          =>  avm_hostBridge_readdata, --:   out     std_logic_vector   (31 downto 0)                        ;
+            iAvalonWriteData         =>  avm_hostBridge_writedata --:   in      std_logic_vector   (31 downto 0)
     );
 
 end rtl;

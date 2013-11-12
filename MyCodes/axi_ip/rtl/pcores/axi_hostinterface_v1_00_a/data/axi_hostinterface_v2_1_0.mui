@@ -5,7 +5,7 @@
 -->
 
 <!--
-  PCP Host Interface Declarations
+  PCP Slave Interface Declarations
 -->
 
 <!DOCTYPE doc SYSTEM "../../ipdialog.dtd" [
@@ -50,6 +50,54 @@
 	<widget id="C_HIGHADDR">
 		<key>C_HIGHADDR</key>
 		<label>Slave High Address </label>
+		<tip></tip>
+	</widget>
+	'>
+    <!--
+        AP Slave Interface Declarations
+    -->
+    <!ENTITY C_HOST_BASEADDR '
+	<widget id="C_HOST_BASEADDR">
+		<key>C_HOST_BASEADDR</key>
+		<label>Host AXI Salve Base Address </label>
+		<tip></tip>
+	</widget>
+	'>
+    <!ENTITY C_HOST_HIGHADDR '
+	<widget id="C_HOST_HIGHADDR">
+		<key>C_HOST_HIGHADDR</key>
+		<label>Host AXI Salve High Address </label>
+		<tip></tip>
+	</widget>
+	'>
+    <!ENTITY C_S_HOST_AXI_ADDR_WIDTH '
+	<widget id="C_S_HOST_AXI_ADDR_WIDTH">
+		<key>C_S_HOST_AXI_ADDR_WIDTH</key>
+		<label>Host AXI Salve Address Width </label>
+		<tip></tip>
+	</widget>
+	'>
+    <!ENTITY C_S_HOST_AXI_DATA_WIDTH '
+	<widget id="C_S_HOST_AXI_DATA_WIDTH">
+		<key>C_S_HOST_AXI_DATA_WIDTH</key>
+		<label>Host AXI Salve Data Width</label>
+		<tip></tip>
+	</widget>
+	'>
+    <!--
+      PCP Master Bridge Interface Declarations
+    -->
+    <!ENTITY C_M_AXI_ADDR_WIDTH '
+	<widget id="C_M_AXI_ADDR_WIDTH">
+		<key>C_M_AXI_ADDR_WIDTH</key>
+		<label>Master Address Width</label>
+		<tip></tip>
+	</widget>
+	'>
+    <!ENTITY C_M_AXI_DATA_WIDTH '
+	<widget id="C_M_AXI_DATA_WIDTH">
+		<key>C_M_AXI_DATA_WIDTH</key>
+		<label>Master Data Width </label>
 		<tip></tip>
 	</widget>
 	'>
@@ -202,10 +250,22 @@
 <doc>
 	<view id="General">
 		<display>General</display>
-        <group id="Addresses">
-	        <display>Addresses</display>
+        <group id="PCP AXI Slave Configurations">
+	        <display>PCP Slave Configurations</display>
             <item>&C_BASEADDR;</item>
 			<item>&C_HIGHADDR;</item>
+        </group>
+        <group id="Host AXI Slave Configurations">
+	        <display>Host Slave Configurations</display>
+            <item>&C_HOST_BASEADDR;</item>
+			<item>&C_HOST_HIGHADDR;</item>
+            <item>&C_S_HOST_AXI_ADDR_WIDTH;</item>
+            <item>&C_S_HOST_AXI_DATA_WIDTH;</item>
+        </group>
+        <group id="Master Bridge Configurations">
+	        <display>Master Configuration</display>
+            <item>&C_M_AXI_ADDR_WIDTH;</item>
+			<item>&C_M_AXI_DATA_WIDTH;</item>
         </group>
         <group id="Host Processor Interface">
 			<display>Host Processor Interface</display>

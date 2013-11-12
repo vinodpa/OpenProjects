@@ -22,4 +22,5 @@ lib axi_hostinterface_v1_00_a global.vhd vhdl
 lib axi_hostinterface_v1_00_a irqGenRtl.vhd vhdl
 lib axi_hostinterface_v1_00_a statusControlRegRtl.vhd vhdl
 lib axi_hostinterface_v1_00_a axi_lite_slave_wrapperRtl.vhd vhdl
+lib axi_hostinterface_v1_00_a axi_lite_master_wrapperRtl.vhd vhdl
 
