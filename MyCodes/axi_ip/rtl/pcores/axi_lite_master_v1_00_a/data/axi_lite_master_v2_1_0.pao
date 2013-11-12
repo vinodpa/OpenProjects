@@ -46,7 +46,9 @@
 ###############################################################################
 
 
-#lib axi_lite_master_v1_00_a axi_lite_master.vhd vhdl
-lib axi_lite_master_v1_00_a axi_lite_master.v verilog
-lib axi_lite_master_v1_00_a axi_lite_master_wrapper.v verilog
-lib axi_lite_slave_v1_00_a ../../../../../../avalon_ip/rtl/avalon_master/avalon_master.v verilog
+
+#lib axi_lite_master_v1_00_a axi_lite_master.v verilog
+#lib axi_lite_master_v1_00_a axi_lite_master_wrapper.v verilog
+lib axi_lite_master_v1_00_a axi_lite_master.vhd vhdl
+lib axi_lite_master_v1_00_a axi_lite_master_wrapper.vhd vhdl
+lib axi_lite_master_v1_00_a ../../../../../../avalon_ip/rtl/avalon_master/avalon_master.v verilog

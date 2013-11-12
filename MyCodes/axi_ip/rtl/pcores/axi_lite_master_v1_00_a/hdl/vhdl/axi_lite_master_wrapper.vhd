@@ -112,7 +112,7 @@ begin
 --
 --
 	RReady			<= '1' when StateCurrent = sREAD_DONE else
-					   '0'
+					   '0' ;
 	
     start_transfer  <=   (iAvalonRead and not RReady) or iAvalonWrite      ;
     done_transfer   <=   M_AXI_WREADY or (M_AXI_RVALID and RReady) or rd_done   ;
