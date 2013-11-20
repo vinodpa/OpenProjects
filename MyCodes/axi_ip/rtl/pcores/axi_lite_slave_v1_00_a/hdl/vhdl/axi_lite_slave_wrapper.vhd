@@ -95,7 +95,8 @@ begin
     --Ouput Signals assigns
     oAvsAddress      <=  address             ;
     oAvsByteenable   <=  byte_enable         ;
-    oAvsRead         <=  S_AXI_RREADY        ;
+    --oAvsRead         <=  S_AXI_RREADY        ; -- TODO: ARVALID , RREADY is a pulse
+    oAvsRead         <=  RvalidCurrent or  S_AXI_ARVALID      ; -- TODO: ARVALID , RREADY is a pulse
     oAvsWrite        <=  S_AXI_WVALID        ;
     oAvsWritedata    <=  S_AXI_WDATA         ;
     S_AXI_RDATA         <=  iAvsReaddata     ;
@@ -110,34 +111,45 @@ begin
     S_AXI_RRESP      <=   "00"        ;   --always ok
 
     -- Address Decoder
-SEL_IP:
-    process ( S_AXI_AWADDR , S_AXI_ARADDR )
-    begin
-        if ((C_BASEADDR <=  S_AXI_AWADDR) and (S_AXI_AWADDR <= C_HIGHADDR))
-        then
-            chip_sel    <=  '1' ;
-        elsif ((C_BASEADDR <=  S_AXI_ARADDR) and (S_AXI_ARADDR <= C_HIGHADDR))
-        then
-            chip_sel    <=  '1' ;
-        else
-            chip_sel    <=  '0' ;
-        end if;
-    end process;
+
+    chip_sel <= '1' when ( (S_AXI_AWADDR >=  C_BASEADDR ) or (S_AXI_AWADDR <= C_HIGHADDR)) else
+                '1' when ( (S_AXI_ARADDR >=  C_BASEADDR ) or (S_AXI_ARADDR <= C_HIGHADDR)) else
+                '0' ;
+
 
     --TODO: Mux Addresss
 SEL_ADDR:
-    process (S_AXI_ARVALID , S_AXI_AWVALID, S_AXI_ARADDR , S_AXI_AWADDR, chip_sel)
+    process (ACLK)
     begin
-        if ((chip_sel and S_AXI_ARVALID)='1' )
-        then
-            address     <=  S_AXI_ARADDR ;
-        elsif ((chip_sel and S_AXI_AWVALID)='1' )
-        then
-            address     <= S_AXI_AWADDR ;
-        else
-            address     <= x"00000000"  ;
+        if(rising_edge(ACLK))        then
+            if( ARESETN = '0' )        then
+                address <=  x"00000000" ;
+            elsif ((chip_sel and S_AXI_ARVALID) = '1' ) then
+                address <= S_AXI_ARADDR ;
+            elsif ((chip_sel and S_AXI_AWVALID) = '1' ) then
+                address     <= S_AXI_AWADDR ;
+            else
+                address     <= address ;
+            end if;
         end if;
     end process;
+--    process (S_AXI_ARVALID , S_AXI_AWVALID, S_AXI_ARADDR , S_AXI_AWADDR, chip_sel)
+--    begin
+--        if ((chip_sel and (S_AXI_ARVALID or ArreadyCurrent))='1' )
+--        then
+--            address     <=  S_AXI_ARADDR ;
+--        elsif ((chip_sel and S_AXI_AWVALID)='1' )
+--        then
+--            address     <= S_AXI_AWADDR ;
+--        else
+--            address     <= address  ;
+--        end if;
+--    end process;
+
+--    address <= S_AXI_ARADDR when ((chip_sel and (S_AXI_ARVALID or RvalidCurrent)) = '1') else
+--            <= S_AXI_AWADDR when ((chip_sel and (S_AXI_AWVALID or S_AXI_WVALID)) = '1')  else
+--            <= x"00000000" ;
+
  --TODO: Byte Enable : Axi Lite supports all data accesses use the full width of the data bus.
  ---AXI4-Lite supports a data bus width of 32-bit or 64-bit. [SPEC B1- Definition of AXI Lite]
  --Cheat Code 1: Added the functionality STRB from AXI4 TODO: Add read strobe also
@@ -174,31 +186,49 @@ SEQ_LOGIC_FSM:
 
 
 --Step1: Wait for Address Valid --> Go to Read/Write (Step 2 or 3)
---Step2: Wait for ReadReady --> ReadValid & ReadAddressReady assert
---Step3: Wait for Wdata Valis --> Assert Wready & Awready & Bvalid with Bresp
+--Step2: assert ReadValid & ReadAddressReady assert and wait for Read Ready
+--Step3: Wait for Wdata Valid --> Assert Wready & Awready & Bvalid with Bresp
 
 --Combinational Logic for FSM
 COM_LOGIC_FSM:
-    process (StateCurrent)
+    process (
+				   StateCurrent ,
+					chip_sel	    ,
+					S_AXI_AWVALID,
+					S_AXI_ARVALID,
+					S_AXI_RREADY ,
+					S_AXI_WVALID 					
+				)
     begin
+    --Default values
+    StateNext		<=	StateCurrent	;
+    BvalidNext		<=	BvalidNext	;
+    AwreadyNext		<=	AwreadyCurrent	;
+    ArreadyNext		<=	ArreadyNext	;
+    WreadyNext		<=	WreadyCurrent	;
+    RvalidNext		<=	RvalidCurrent	;
+    
     case (StateCurrent) is
             when sIDLE =>
                BvalidNext    <= '0' ;
                AwreadyNext   <= '0' ;
-               ArreadyNext   <= '0' ;
+               --ArreadyNext   <= '0' ;
                WreadyNext    <= '0' ;
                RvalidNext    <= '0' ;
 
-               if(chip_sel = '1' )
-                then
+               if(chip_sel = '1' ) then
                    if(S_AXI_AWVALID    =   '1') then
                    StateNext <= sWRITE ;
+                   ArreadyNext   <= '0' ;
                    elsif (S_AXI_ARVALID    =   '1') then
                    StateNext  <= sREAD ;
+                   ArreadyNext   <= '1' ;
                    else
                    StateNext  <= sIDLE ;
+                   ArreadyNext   <= '0' ;
                    end if;
                 else
+                   ArreadyNext   <= '0' ;
                    StateNext <= sIDLE ;
                end if;
 
@@ -215,14 +245,16 @@ COM_LOGIC_FSM:
                AwreadyNext   <= '0' ;
                WreadyNext    <= '0' ;
 
-               if( S_AXI_RREADY = '1' )
+               ArreadyNext   <= '0' ;
+               RvalidNext    <= '1' ;
+               if( S_AXI_RREADY = '1' )-- As per Spec Slave shouldn't wait for RREADY.
                 then
-                 ArreadyNext   <= '1' ;
-                 RvalidNext    <= '1' ;
+                 --ArreadyNext   <= '1' ; --TODO: Check this read part
+                 --RvalidNext    <= '1' ; --TODO: Check this read part
                  StateNext     <= sDELAY ;
                else
-                 ArreadyNext   <= '0' ;
-                 RvalidNext    <= '0' ;
+                -- ArreadyNext   <= '0' ;
+                -- RvalidNext    <= '0' ;
                  StateNext     <= sREAD ;
                end if;
 

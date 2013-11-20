@@ -1,7 +1,0 @@
--batch 
--create axi_hostinterface 
--ver 1.00.a 
--dir "D:\MY_EXP\Coding\myworks\OpenProjects\MyCodes\axi_ip\ReferenceDesign\sp605" 
--lang vhdl 
--bus axi4lite s 
--xps 

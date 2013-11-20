@@ -55,4 +55,22 @@ PORT S_AXI_RRESP = RRESP, BUS = S_AXI, DIR = O, VEC = [1:0]
 PORT S_AXI_RVALID = RVALID, BUS = S_AXI, DIR = O
 PORT S_AXI_RREADY = RREADY, BUS = S_AXI, DIR = I
 
+PORT tAvsPcpAddress = "", DIR = O, VEC = [31:0]
+PORT tAvsPcpByteenable = "", DIR = O, VEC = [3:0]
+PORT tAvsPcpRead = "", DIR = O
+PORT tAvsPcpWrite = "", DIR = O
+PORT tAvsPcpWritedata = "", DIR = O, VEC = [31:0]
+PORT tAvsPcpReaddata  = "", DIR = O, VEC = [31:0]
+PORT tAvsPcpWaitrequest = "", DIR = O
+PORT tAWVALID = "", DIR = O
+PORT tAWREADY = "", DIR = O
+PORT tWVALID = "", DIR = O
+PORT tWREADY = "", DIR = O
+PORT tBVALID = "", DIR = O
+PORT tBREADY = "", DIR = O
+PORT tARVALID = "", DIR = O
+PORT tARREADY = "", DIR = O
+PORT tRVALID = "", DIR = O
+PORT tRREADY = "", DIR = O
+
 END

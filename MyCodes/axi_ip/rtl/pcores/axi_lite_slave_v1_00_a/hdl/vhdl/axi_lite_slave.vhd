@@ -49,7 +49,25 @@ port
     S_AXI_RDATA     :   out     std_logic_vector    (C_S_AXI_DATA_WIDTH-1 downto 0)     ;
     S_AXI_RRESP     :   out     std_logic_vector    (2-1 downto 0)                      ;
     S_AXI_RVALID    :   out     std_logic                                               ;
-    S_AXI_RREADY    :   in      std_logic
+    S_AXI_RREADY    :   in      std_logic												;
+	--test ports
+	tAvsPcpAddress      : out std_logic_vector    (31 downto 0)   ;
+    tAvsPcpByteenable   : out std_logic_vector    (3 downto 0)    ;
+    tAvsPcpRead         : out std_logic  ;
+	tAvsPcpWrite        : out std_logic  ;
+	tAvsPcpWritedata    : out std_logic_vector   (31 downto 0);
+	tAvsPcpReaddata     : out std_logic_vector   (31 downto 0);
+	tAvsPcpWaitrequest  : out std_logic   					  ;
+	tAWVALID			: out std_logic   					  ;
+	tAWREADY			: out std_logic   					  ;
+	tWVALID				: out std_logic   					  ;
+	tWREADY				: out std_logic   					  ;
+	tBVALID				: out std_logic   					  ;
+	tBREADY				: out std_logic   					  ;
+	tARVALID			: out std_logic   					  ;
+	tARREADY			: out std_logic   					  ;
+	tRVALID				: out std_logic   					  ;
+	tRREADY				: out std_logic   					  
     );
 
 end axi_lite_slave;
@@ -64,7 +82,44 @@ signal  AvsPcpWritedata    :  std_logic_vector   (31 downto 0);
 signal  AvsPcpReaddata     :  std_logic_vector   (31 downto 0);
 signal  AvsPcpWaitrequest  :  std_logic   ;
 
+signal	AWREADY			  :  std_logic   ;
+signal  WREADY			  :  std_logic   ;
+signal	BVALID			  :  std_logic   ;
+signal	ARREADY		  	  :  std_logic   ;
+signal 	RVALID		  	  :  std_logic   ;
+	
+
 begin
+
+	tAvsPcpAddress			<= AvsPcpAddress ;
+    tAvsPcpByteenable		<= AvsPcpByteenable ;
+    tAvsPcpRead      		<= AvsPcpRead		;
+	tAvsPcpWrite     		<= AvsPcpWrite		;
+	tAvsPcpWritedata 		<= AvsPcpWritedata ;
+	tAvsPcpReaddata  		<= AvsPcpReaddata ;
+	tAvsPcpWaitrequest		<= AvsPcpWaitrequest ;
+	
+	-- Slave Interface Write Address Ports
+    tAWVALID   <=  S_AXI_AWVALID   ;
+    S_AXI_AWREADY  <=  AWREADY   ;
+	tAWREADY   		<=  AWREADY   ;
+    -- Slave Interface Write Data Ports
+    tWVALID    <=  S_AXI_WVALID    ;
+    S_AXI_WREADY   <=  WREADY    ;
+	tWREADY    		<=  WREADY    ;
+    -- Slave Interface Write Response Ports
+    S_AXI_BVALID   <=  BVALID    ;
+	tBVALID    		<=  BVALID    ;
+    tBREADY    <=  S_AXI_BREADY    ;
+    -- Slave Interface Read Address Ports
+    tARVALID   <=  S_AXI_ARVALID   ;
+    S_AXI_ARREADY  <=  ARREADY   ;
+	tARREADY   		<=  ARREADY   ;
+    -- Slave Interface Read Data Ports
+    S_AXI_RVALID   <=  RVALID    ;
+	tRVALID    		<=  RVALID    ;
+    tRREADY    <=  S_AXI_RREADY    ;
+
 
 WRAPPER: entity work.axi_lite_slave_wrapper
     generic map (
@@ -82,25 +137,25 @@ WRAPPER: entity work.axi_lite_slave_wrapper
     S_AXI_AWADDR    =>  S_AXI_AWADDR    ,
     S_AXI_AWPROT    =>  S_AXI_AWPROT    ,
     S_AXI_AWVALID   =>  S_AXI_AWVALID   ,
-    S_AXI_AWREADY   =>  S_AXI_AWREADY   ,
+    S_AXI_AWREADY   =>  AWREADY   ,
     -- Slave Interface Write Data Ports
     S_AXI_WDATA     =>  S_AXI_WDATA     ,
     S_AXI_WSTRB     =>  S_AXI_WSTRB     ,
     S_AXI_WVALID    =>  S_AXI_WVALID    ,
-    S_AXI_WREADY    =>  S_AXI_WREADY    ,
+    S_AXI_WREADY    =>  WREADY    ,
     -- Slave Interface Write Response Ports
     S_AXI_BRESP     =>  S_AXI_BRESP     ,
-    S_AXI_BVALID    =>  S_AXI_BVALID    ,
+    S_AXI_BVALID    =>  BVALID    ,
     S_AXI_BREADY    =>  S_AXI_BREADY    ,
     -- Slave Interface Read Address Ports
     S_AXI_ARADDR    =>  S_AXI_ARADDR    ,
     S_AXI_ARPROT    =>  S_AXI_ARPROT    ,
     S_AXI_ARVALID   =>  S_AXI_ARVALID   ,
-    S_AXI_ARREADY   =>  S_AXI_ARREADY   ,
+    S_AXI_ARREADY   =>  ARREADY   ,
     -- Slave Interface Read Data Ports
     S_AXI_RDATA     =>  S_AXI_RDATA     ,
     S_AXI_RRESP     =>  S_AXI_RRESP     ,
-    S_AXI_RVALID    =>  S_AXI_RVALID    ,
+    S_AXI_RVALID    =>  RVALID    ,
     S_AXI_RREADY    =>  S_AXI_RREADY    ,
     --Avalon Interface
     oAvsAddress  =>  AvsPcpAddress   ,
@@ -113,18 +168,18 @@ WRAPPER: entity work.axi_lite_slave_wrapper
     );
 
 
-SLAVE: entity work.avalon_slave
-        port map
-            (
-              iClk                  =>  ACLK                    ,
-              nReset                =>  ARESETN                 ,
-              avs_pcp_address       =>  AvsPcpAddress (10 downto 0)   ,
-              avs_pcp_byteenable    =>  AvsPcpByteenable             ,
-              avs_pcp_read          =>  AvsPcpRead            ,
-              avs_pcp_READData      =>  AvsPcpReaddata             ,   --TODO:Check Direct Assign is fine or not
-              avs_pcp_write         =>  AvsPcpWrite            ,
-              avs_pcp_writedata     =>  AvsPcpWritedata             ,    --TODO:Check Direct Assign is fine or not
-              avs_pcp_waitrequest   =>  AvsPcpWaitrequest                        --TODO: No need of wait request
-             );
+--SLAVE: entity work.avalon_slave
+--        port map
+--            (
+--              iClk                  =>  ACLK                    ,
+--              nReset                =>  ARESETN                 ,
+--              avs_pcp_address       =>  AvsPcpAddress (10 downto 0)   ,
+--              avs_pcp_byteenable    =>  AvsPcpByteenable             ,
+--              avs_pcp_read          =>  AvsPcpRead            ,
+--              avs_pcp_READData      =>  AvsPcpReaddata             ,   --TODO:Check Direct Assign is fine or not
+--              avs_pcp_write         =>  AvsPcpWrite            ,
+--              avs_pcp_writedata     =>  AvsPcpWritedata             ,    --TODO:Check Direct Assign is fine or not
+--              avs_pcp_waitrequest   =>  AvsPcpWaitrequest                        --TODO: No need of wait request
+--             );
 
 end implementation;
