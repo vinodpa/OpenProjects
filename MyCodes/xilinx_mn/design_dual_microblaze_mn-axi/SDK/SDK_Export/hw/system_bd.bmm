@@ -1,0 +1,57 @@
+// BMM LOC annotation file.
+//
+// Release 14.6 -  P.20131013, build 3.0.10 Apr 3, 2013
+// Copyright (c) 1995-2014 Xilinx, Inc.  All rights reserved.
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Processor 'host', ID 100, memory map.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ADDRESS_MAP host MICROBLAZE-LE 100
+
+    ///////////////////////////////////////////////////////////////////////////////
+    //
+    // Processor 'host' address space 'host_bram_block_combined' 0x00000000:0x00001FFF (8 KBytes).
+    //
+    ///////////////////////////////////////////////////////////////////////////////
+
+    ADDRESS_SPACE host_bram_block_combined RAMB16 [0x00000000:0x00001FFF]
+        BUS_BLOCK
+            host_bram_block/host_bram_block/ramb16bwer_0 RAMB16 [31:24] [0:2047] INPUT = host_bram_block_combined_0.mem PLACED = X2Y70;
+            host_bram_block/host_bram_block/ramb16bwer_1 RAMB16 [23:16] [0:2047] INPUT = host_bram_block_combined_1.mem PLACED = X2Y74;
+            host_bram_block/host_bram_block/ramb16bwer_2 RAMB16 [15:8] [0:2047] INPUT = host_bram_block_combined_2.mem PLACED = X2Y72;
+            host_bram_block/host_bram_block/ramb16bwer_3 RAMB16 [7:0] [0:2047] INPUT = host_bram_block_combined_3.mem PLACED = X3Y70;
+        END_BUS_BLOCK;
+    END_ADDRESS_SPACE;
+
+END_ADDRESS_MAP;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Processor 'pcp', ID 101, memory map.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ADDRESS_MAP pcp MICROBLAZE-LE 101
+
+    ///////////////////////////////////////////////////////////////////////////////
+    //
+    // Processor 'pcp' address space 'pcp_bram_block_combined' 0x00000000:0x00001FFF (8 KBytes).
+    //
+    ///////////////////////////////////////////////////////////////////////////////
+
+    ADDRESS_SPACE pcp_bram_block_combined RAMB16 [0x00000000:0x00001FFF]
+        BUS_BLOCK
+            pcp_bram_block/pcp_bram_block/ramb16bwer_0 RAMB16 [31:24] [0:2047] INPUT = pcp_bram_block_combined_0.mem PLACED = X4Y68;
+            pcp_bram_block/pcp_bram_block/ramb16bwer_1 RAMB16 [23:16] [0:2047] INPUT = pcp_bram_block_combined_1.mem PLACED = X4Y66;
+            pcp_bram_block/pcp_bram_block/ramb16bwer_2 RAMB16 [15:8] [0:2047] INPUT = pcp_bram_block_combined_2.mem PLACED = X4Y62;
+            pcp_bram_block/pcp_bram_block/ramb16bwer_3 RAMB16 [7:0] [0:2047] INPUT = pcp_bram_block_combined_3.mem PLACED = X4Y64;
+        END_BUS_BLOCK;
+    END_ADDRESS_SPACE;
+
+END_ADDRESS_MAP;
+
