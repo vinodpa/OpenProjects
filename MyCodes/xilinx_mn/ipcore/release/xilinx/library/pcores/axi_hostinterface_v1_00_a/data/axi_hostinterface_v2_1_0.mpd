@@ -63,19 +63,19 @@ PARAMETER gVersionCount = 0x0, DT = INTEGER, RANGE = (0:65535), ASSIGNMENT = CON
 PARAMETER gParallelDataWidth = 16, DT = INTEGER, RANGE = (16,32), ISVALID = (gHostIfType == 1)
 PARAMETER gParallelMultiplex = 0, DT = INTEGER, RANGE = (0:1), VALUES = (0 = "Demultiplexed", 1 = "Multiplexed"), ISVALID = (gHostIfType == 1),
 ## Buffer Managements
-PARAMETER gBaseDynBuf0  = 0x800, DT = std_logic_vector(31 downto 0), TYPE = NON_HDL, ASSIGNMENT = CONSTANT
-PARAMETER gBaseDynBuf1  = 0x01000, DT = std_logic_vector, TYPE = NON_HDL, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_dbuf1
-PARAMETER gBaseErrCntr = 0x01800, DT = std_logic_vector, TYPE = NON_HDL, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_Errcntr
-PARAMETER gBaseTxNmtQ = 0x02800, DT = std_logic_vector, TYPE = NON_HDL, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_TxNmtQ
-PARAMETER gBaseTxGenQ = 0x03800, DT = std_logic_vector, TYPE = NON_HDL, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_TxGenQ
-PARAMETER gBaseTxSynQ = 0x04800, DT = std_logic_vector, TYPE = NON_HDL, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_TxSynQ
-PARAMETER gBaseTxVetQ = 0x05800, DT = std_logic_vector, TYPE = NON_HDL, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_TxVetQ
-PARAMETER gBaseRxVetQ = 0x06800, DT = std_logic_vector, TYPE = NON_HDL, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_RxVetQ
-PARAMETER gBaseK2UQ = 0x07000, DT = std_logic_vector, TYPE = NON_HDL, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_K2UQ
-PARAMETER gBaseU2KQ = 0x09000, DT = std_logic_vector, TYPE = NON_HDL, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_U2KQ
-PARAMETER gBaseTpdo = 0x0B000, DT = std_logic_vector, TYPE = NON_HDL, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_Tpdo
-PARAMETER gBaseRpdo = 0x0E000, DT = std_logic_vector, TYPE = NON_HDL, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_Rpdo
-PARAMETER gBaseRes = 0x14000, DT = std_logic_vector, TYPE = NON_HDL, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_Res
+PARAMETER gBaseDynBuf0  = 0x800, DT = INTEGER, ASSIGNMENT = CONSTANT
+PARAMETER gBaseDynBuf1  = 0x01000, DT = INTEGER, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_dbuf1
+PARAMETER gBaseErrCntr = 0x01800, DT = INTEGER, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_Errcntr
+PARAMETER gBaseTxNmtQ = 0x02800, DT = INTEGER, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_TxNmtQ
+PARAMETER gBaseTxGenQ = 0x03800, DT = INTEGER, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_TxGenQ
+PARAMETER gBaseTxSynQ = 0x04800, DT = INTEGER, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_TxSynQ
+PARAMETER gBaseTxVetQ = 0x05800, DT = INTEGER, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_TxVetQ
+PARAMETER gBaseRxVetQ = 0x06800, DT = INTEGER, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_RxVetQ
+PARAMETER gBaseK2UQ = 0x07000, DT = INTEGER, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_K2UQ
+PARAMETER gBaseU2KQ = 0x09000, DT = INTEGER, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_U2KQ
+PARAMETER gBaseTpdo = 0x0B000, DT = INTEGER, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_Tpdo
+PARAMETER gBaseRpdo = 0x0E000, DT = INTEGER, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_Rpdo
+PARAMETER gBaseRes = 0x14000, DT = INTEGER, IPLEVEL_UPDATE_VALUE_PROC = calc_baseadr_Res
 
 ## Other Parameters that Used In GUI
 PARAMETER gTotalMem = 49152, DT = INTEGER, TYPE = NON_HDL, IPLEVEL_UPDATE_VALUE_PROC = calc_total_memory
