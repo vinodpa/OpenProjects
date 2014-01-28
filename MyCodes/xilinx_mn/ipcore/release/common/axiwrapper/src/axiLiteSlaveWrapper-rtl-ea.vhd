@@ -41,16 +41,13 @@
 --    POSSIBILITY OF SUCH DAMAGE.
 --
 -------------------------------------------------------------------------------
--- Version History
--------------------------------------------------------------------------------
--- 2014-01-13   Vinod PA    Added AXI-Lite warpper for Avalon Slave
--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 library work;
 use work.global.all;
+
 --TODO: update description
 -------------------------------------------------------------------------------
 --! @brief
@@ -77,7 +74,7 @@ entity axiLiteSlaveWrapper is
         --! Address for Write Address Channel
         iAwaddr         : in    std_logic_vector(gAddrWidth-1 downto 0);
         --! Protection for Write Address Channel
-        iAwprot         : in    std_logic_vector(2 downto 0);
+        iAwprot         : in    std_logic_vector(2 downto 0); --unused input
         --! AddressValid for Write Address Channel
         iAwvalid        : in    std_logic;
         --! AddressReady for Write Address Channel
@@ -99,7 +96,7 @@ entity axiLiteSlaveWrapper is
         --! ReadAddress for Read Adddress Channel
         iAraddr         : in    std_logic_vector(gAddrWidth-1 downto 0);
         --! ReadAddressProtection for Read Address Channel
-        iArprot         : in    std_logic_vector(2 downto 0);
+        iArprot         : in    std_logic_vector(2 downto 0); --unused input
         --! ReadAddressValid for Read Address Channel
         iArvalid        : in    std_logic;
         --! ReadAddressReady for Read Address Channel
@@ -142,26 +139,41 @@ architecture rtl of axiLiteSlaveWrapper is
     );
 
     --Avalon Interface designs
+    --! address latch for Avalon Interface
     signal  address     : std_logic_vector(gAddrWidth-1 downto 0);
+    --! Muxed address from AXI interface
     signal  mux_address : std_logic_vector(gAddrWidth-1 downto 0);
+    --! Chip select for address decoder
     signal  chip_sel    : std_logic;
+    --! Muxed byte enable latch from AXI Interface
     signal  byte_enable : std_logic_vector(gDataWidth/8-1 downto 0);
 
     --Signals for FSM
+    --! synchronised fsm state
     signal  fsm         :  tFsm;
+    --! fsm state for combinational logic
     signal  fsm_next    :  tFsm;
 
     --Internal Signals
+    --! control for avalon read signal with fsm
     signal avalonRead          : std_logic;
+    --! Read Data latch for avalon interface
     signal avalonReadDataLatch : std_logic_vector(31 downto 0);
+    --! control for avalon write signal with fsm
     signal avalonWrite         : std_logic;
 
+    --! write data from AXI for Avalon interface
     signal axiWriteData : std_logic_vector(31 downto 0);
+    --! valid data from AXI to Avalon
     signal axiDataValid : std_logic;
 
+    --! Write start fsm operations
     signal writeStart   : std_logic;
+    --! Write select for control write operations
     signal write_sel    : std_logic;
+    --! Read Start for fsm operations
     signal readStart    : std_logic;
+    --! Read select for control read opeartions
     signal read_sel     : std_logic;
 begin
     -- TODO: Check weather we need to add clock sync to make sure data & control
@@ -169,8 +181,8 @@ begin
     --
 
     --Avalon Slave Interface Singals
-    oAvsAddress     <=  address;
-    oAvsByteenable  <=  byte_enable;
+    oAvsAddress     <= address;
+    oAvsByteenable  <= byte_enable;
     oAvsRead        <= avalonRead;
     oAvsWrite       <= avalonWrite;
     oAvsWritedata   <= axiWriteData;
@@ -263,8 +275,6 @@ begin
     COM_LOGIC_FSM : process (
         fsm,
         chip_sel,
-        writeStart,
-        readStart,
         iAwvalid,
         iArvalid,
         iRready,

@@ -66,9 +66,13 @@ end edgedetector;
 
 architecture rtl of edgedetector is
     --! Register to delay input by one clock cycle
-    signal reg : std_logic;
+    signal reg          : std_logic;
     --! Register next
-    signal reg_next : std_logic;
+    signal reg_next     : std_logic;
+    --! Second register
+    signal reg_l        : std_logic;
+    --! Second register next
+    signal reg_l_next   : std_logic;
 begin
     -- assign input data to register
     reg_next <= iData;
@@ -77,7 +81,7 @@ begin
     comb : process (
         iEnable,
         reg,
-        reg_next
+        reg_l
     )
     begin
         -- default
@@ -87,26 +91,30 @@ begin
 
         if iEnable = cActivated then
             -- rising edge
-            if reg = cInactivated and reg_next = cActivated then
+            if reg_l = cInactivated and reg = cActivated then
                 oRising <= cActivated;
                 oAny <= cActivated;
             end if;
 
             -- falling edge
-            if reg = cActivated and reg_next = cInactivated then
+            if reg_l = cActivated and reg = cInactivated then
                 oFalling <= cActivated;
                 oAny <= cActivated;
             end if;
         end if;
     end process;
 
+    reg_l_next <= reg;
+
     --! Clock process
     regClk : process(iArst, iClk)
     begin
         if iArst = cActivated then
-            reg <= cInactivated;
+            reg     <= cInactivated;
+            reg_l   <= cInactivated;
         elsif rising_edge(iClk) then
-            reg <= reg_next;
+            reg     <= reg_next;
+            reg_l   <= reg_l_next;
         end if;
     end process;
 end rtl;

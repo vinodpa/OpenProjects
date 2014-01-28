@@ -41,10 +41,7 @@
 --    POSSIBILITY OF SUCH DAMAGE.
 --
 -------------------------------------------------------------------------------
--- Version History
--------------------------------------------------------------------------------
--- 2014-01-13   Vinod PA    Added AXI-Lite warpper for Avalon master
--------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 library work;
@@ -59,7 +56,6 @@ use work.global.all;
 --! sWVALID,sBREADY,sARVALID,sRREADY,sWRITE_DONE,sREAD_DONE) are used for
 --! control the transitions of signals on both Avalon & AXI interface.
 -------------------------------------------------------------------------------
-
 entity axiLiteMasterWrapper is
     generic (
         --! Address width for AXI bus interface
@@ -91,7 +87,7 @@ entity axiLiteMasterWrapper is
         --! WriteLast for Write Data Channel to indicate last write operations
         oWlast              : out   std_logic;
         --! WriteResponse for Write Response Channel
-        iBresp              : in    std_logic_vector(1 downto 0);
+        iBresp              : in    std_logic_vector(1 downto 0); --unused input
         --! ResponseValid for Write Response Channel
         iBvalid             : in    std_logic;
         --!  ResponaseReady for Write Response Channel
@@ -107,7 +103,7 @@ entity axiLiteMasterWrapper is
         --! ReadData for Read Data Channel
         iRdata              : in    std_logic_vector(gDataWidth-1 downto 0);
         --! ReadResponse for Read Data Channel
-        iRresp              : in    std_logic_vector(1 downto 0);
+        iRresp              : in    std_logic_vector(1 downto 0); --unused input
         --! ReadValid for Read Data Channel
         iRvalid             : in    std_logic;
         --! ReadReady for Read Dara Channel
@@ -143,19 +139,25 @@ architecture rtl of axiLiteMasterWrapper is
         sWRITE_DONE,
         sREAD_DONE
     );
-
+    --! synchronized fsm state
     signal fsm      : tFsm;
+    --! combinational fsm state
     signal fsm_next : tFsm;
 
     --  Handle Avalon Master
-    signal start_transfer   : std_logic ;
-    signal done_transfer    : std_logic ;
-    signal RReady           : std_logic ;
-    signal writeOp_done     : std_logic ;
-    signal readOp_done      : std_logic ;
+    --! start of transfer between AXI and Avalon
+    signal start_transfer   : std_logic;
+    --! Complete transfer between AXI and Avalon
+    signal done_transfer    : std_logic;
+    --! Read Ready for Valid Read operations
+    signal RReady           : std_logic;
+    --! Write operation complete
+    signal writeOp_done     : std_logic;
+    --! Read operation complete
+    signal readOp_done      : std_logic;
+    --! Read Data latch for hold data
     signal readData         : std_logic_vector(31 downto 0);
 begin
-
     --AXI Master Signals
     oAwprot <= "000";
     oArprot <= "000";
@@ -245,7 +247,7 @@ begin
     )
     begin
         -- Default Values for signals
-        fsm_next <= fsm ;
+        fsm_next <= fsm;
 
         case fsm is
             when sINIT =>

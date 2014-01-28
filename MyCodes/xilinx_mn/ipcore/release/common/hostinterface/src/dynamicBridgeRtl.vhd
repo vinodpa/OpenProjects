@@ -122,7 +122,7 @@ end dynamicBridge;
 -------------------------------------------------------------------------------
 architecture rtl of dynamicBridge is
     --! Bridge cycle delay
-    constant cBridgeCycleDelay  : natural := 2;
+    constant cBridgeCycleDelay  : natural := 3;
     --! Bridge read path enable all bytes
     constant cByteenableAllOnes : std_logic_vector(iBaseSetByteenable'range) :=
         (others => cActivated);
@@ -153,7 +153,7 @@ architecture rtl of dynamicBridge is
     --! Dynamic address offset within selected static space
     signal dynamicOffset         : std_logic_vector(iBaseSetData'range);
     --! Translated address
-    signal translateAddress         : std_logic_vector(MAX(iBaseSetData'high, oBridgeAddress'high) downto inAddrReg'low);
+    signal translateAddress         : std_logic_vector(maximum(iBaseSetData'high, oBridgeAddress'high) downto inAddrReg'low);
 begin
     -- assert
     assert (cBridgeCycleDelay > 0)

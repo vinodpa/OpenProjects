@@ -40,16 +40,11 @@
 --    POSSIBILITY OF SUCH DAMAGE.
 --
 -------------------------------------------------------------------------------
--- -- Version History
--------------------------------------------------------------------------------
--- 2014-01-13   Vinod PA    initial Draft for Top file
--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
 library work;
 use work.global.all;
-
 
 entity axi_hostinterface is
     generic (
@@ -298,31 +293,30 @@ entity axi_hostinterface is
     --! Maximum fan out for PCP Reset
     attribute MAX_FANOUT of S_AXI_PCP_ARESETN  : signal is "10000";
     --! PCP clock is declared under clock group
-    attribute SIGIS of S_AXI_PCP_ACLK          : signal is "Clk"  ;
+    attribute SIGIS of S_AXI_PCP_ACLK          : signal is "Clk";
     --! PCP Reset is declared under Reset group
-    attribute SIGIS of S_AXI_PCP_ARESETN       : signal is "Rst"  ;
+    attribute SIGIS of S_AXI_PCP_ARESETN       : signal is "Rst";
     --! Maximum fan out for Host clock
     attribute MAX_FANOUT of S_AXI_HOST_ACLK    : signal is "10000";
     --! Maximum fan out for Host Reset
     attribute MAX_FANOUT of S_AXI_HOST_ARESETN : signal is "10000";
     --! Host clock is declared under clock group
-    attribute SIGIS of S_AXI_HOST_ACLK         : signal is "Clk"  ;
+    attribute SIGIS of S_AXI_HOST_ACLK         : signal is "Clk";
     --! Host Reset is declared under Reset group
-    attribute SIGIS of S_AXI_HOST_ARESETN      : signal is "Rst"  ;
+    attribute SIGIS of S_AXI_HOST_ARESETN      : signal is "Rst";
     --! Maximum fan out for Bridge clock
     attribute MAX_FANOUT of M_AXI_ACLK         : signal is "10000";
     --! Maximum fan out for Bridge Reset
     attribute MAX_FANOUT of M_AXI_ARESETN      : signal is "10000";
     --! Bridge clock is declared under clock group
-    attribute SIGIS of M_AXI_ACLK              : signal is "Clk"  ;
+    attribute SIGIS of M_AXI_ACLK              : signal is "Clk";
     --! Bridge Reset is declared under Reset group
-    attribute SIGIS of M_AXI_ARESETN           : signal is "Rst"  ;
+    attribute SIGIS of M_AXI_ARESETN           : signal is "Rst";
 end entity axi_hostinterface;
 
 -------------------------------------------------------------------------------
 -- Architecture section
 -------------------------------------------------------------------------------
-
 architecture rtl of axi_hostinterface is
     constant cBridgeUseMemBlock : natural := cTrue;
 
@@ -377,9 +371,9 @@ begin
     hostif_clock <= S_AXI_PCP_ACLK;
     hostif_reset <= not S_AXI_PCP_ARESETN;
 
-    -------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     --  Host Interface IP
-    -------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     --! The host interface IP
     theHostInterface: entity work.hostInterface
     generic map (
@@ -434,9 +428,9 @@ begin
         oPlkLedStatus           => oPlkLed_ledst
     );
 
-    -------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     --  PCP AXI lite Slave Interface Wrapper
-    -------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     --! AXI slave wrapper for Converting PCP (AXI lite) signals to Avalon interface
     --! in Host interface IP
     AXI_LITE_SLAVE_PCP: entity work.axiLiteSlaveWrapper
@@ -484,9 +478,9 @@ begin
         iAvsWaitrequest => AvsPcpWaitrequest
     );
 
-    -------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     --  Bridge AXI lite Master Interface Wrapper
-    -------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     --! AXI Master wrapper for Converting Avalon signals from host interface IP to
     --! AXI master
     AXI_LITE_MASTER_BRIDGE: entity work.axiLiteMasterWrapper
@@ -537,9 +531,9 @@ begin
     --TODO: Try to use full memory range, now its allowed only up to 0x3FFFFFFF
     AxiLiteBridgeAddress <= "00" & avm_hostBridge_address;
     -- Host Interface IP Internal Bus
-    -------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     --  HOST AXI lite Slave Interface Wrapper
-    -------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     genAxiHost : if gHostIfType = 0 generate
     begin
         --! AXI slave wrapper for Converting Host (AXI lite) signals to Avalon
@@ -579,7 +573,7 @@ begin
             oRvalid         => S_AXI_HOST_RVALID,
             iRready         => S_AXI_HOST_RREADY,
             --Avalon Interface
-            oAvsAddress     => AvsHostAddress ,
+            oAvsAddress     => AvsHostAddress,
             oAvsByteenable  => AvsHostByteenable,
             oAvsRead        => AvsHostRead,
             oAvsWrite       => AvsHostWrite,
@@ -597,9 +591,9 @@ begin
         AvsHostReaddata     <= host_readdata;
     end generate genAxiHost;
 
-    -------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     --  Parallel Interface External Host Processor
-    -------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     genParallel : if gHostIfType = 1 generate
         signal hostData_i        : std_logic_vector(gParallelDataWidth-1 downto 0);
         signal hostData_o        : std_logic_vector(gParallelDataWidth-1 downto 0);
@@ -641,13 +635,13 @@ begin
 
         -- Added for Xilinx Design
         -- '1' for In '0' for Out
-        hostData_i              <= iParHost_data_io ;
-        oParHost_data_io        <= hostData_o ;
-        oParHost_data_io_tri    <= not hostData_en ;
+        hostData_i              <= iParHost_data_io;
+        oParHost_data_io        <= hostData_o;
+        oParHost_data_io_tri    <= not hostData_en;
 
         -- Added for Xilinx Design
-        hostAddressData_i           <= iParHost_addressData_io ;
-        oParHost_addressData_io     <= hostAddressData_o ;
-        oParHost_addressData_tri    <= not hostAddressData_en ;
+        hostAddressData_i           <= iParHost_addressData_io;
+        oParHost_addressData_io     <= hostAddressData_o;
+        oParHost_addressData_tri    <= not hostAddressData_en;
     end generate genParallel;
 end rtl;

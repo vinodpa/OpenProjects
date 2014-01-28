@@ -1,5 +1,5 @@
 
-<EDKSYSTEM EDKVERSION="14.7" EDWVERSION="1.2" TIMESTAMP="Sat Jan 18 22:22:10 2014">
+<EDKSYSTEM EDKVERSION="14.7" EDWVERSION="1.2" TIMESTAMP="Tue Jan 28 14:51:59 2014">
 
   <SYSTEMINFO ARCH="spartan6" DEVICE="xc6slx150t" PACKAGE="fgg676" PART="xc6slx150tfgg676-3" SOURCE="D:/Stack2.0/MN2.0/fpga/boards/xilinx/avnet_lx150t/design_dual_microblaze_mn-axi/system.xmp" SPEEDGRADE="-3"/>
 

@@ -59,14 +59,17 @@ package Global is
 
     function LogDualis(cNumber : natural) return natural;
 
-    function MAX (a : natural; b : natural) return natural;
-    function MIN (a : natural; b : natural) return natural;
+    function maximum (a : natural; b : natural) return natural;
+    function minimum (a : natural; b : natural) return natural;
 
     function integerToBoolean (a : integer) return boolean;
     function booleanToInteger (a : boolean) return integer;
 
     function byteSwap (iVector : std_logic_vector) return std_logic_vector;
     function wordSwap (iVector : std_logic_vector) return std_logic_vector;
+
+    function reduceOr (iVector : std_logic_vector) return std_logic;
+    function reduceAnd (iVector : std_logic_vector) return std_logic;
 
 end Global;
 
@@ -83,7 +86,7 @@ package body Global is
         return vResult;
     end LogDualis;
 
-    function MAX (a : natural; b : natural) return natural is
+    function maximum (a : natural; b : natural) return natural is
         variable vRes : natural;
     begin
 
@@ -97,7 +100,7 @@ package body Global is
 
     end function;
 
-    function MIN (a : natural; b : natural) return natural is
+    function minimum (a : natural; b : natural) return natural is
         variable vRes : natural;
     begin
 
@@ -171,6 +174,32 @@ package body Global is
         end loop;
 
         return vResult;
+    end function;
+
+    function reduceOr (iVector : std_logic_vector) return std_logic is
+        variable vRes_tmp : std_logic;
+    begin
+        -- initialize result variable
+        vRes_tmp := cInactivated;
+
+        for i in iVector'range loop
+            vRes_tmp := vRes_tmp or iVector(i);
+        end loop;
+
+        return vRes_tmp;
+    end function;
+
+    function reduceAnd (iVector : std_logic_vector) return std_logic is
+        variable vRes_tmp : std_logic;
+    begin
+        -- initialize result variable
+        vRes_tmp := cActivated;
+
+        for i in iVector'range loop
+            vRes_tmp := vRes_tmp and iVector(i);
+        end loop;
+
+        return vRes_tmp;
     end function;
 
 end Global;

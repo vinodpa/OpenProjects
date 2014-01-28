@@ -126,7 +126,6 @@ BEGIN microblaze
  BUS_INTERFACE M_AXI_DC = axi4_host
  BUS_INTERFACE M_AXI_IC = axi4_host
  BUS_INTERFACE DEBUG = microblaze_1_debug
-# BUS_INTERFACE INTERRUPT = host_INTERRUPT
  BUS_INTERFACE DLMB = host_dlmb
  BUS_INTERFACE ILMB = host_ilmb
  PORT MB_RESET = proc_sys_reset_0_MB_Reset
@@ -194,7 +193,6 @@ BEGIN microblaze
  BUS_INTERFACE M_AXI_DC = axi4_0
  BUS_INTERFACE M_AXI_IC = axi4_0
  BUS_INTERFACE DEBUG = microblaze_0_debug
-# BUS_INTERFACE INTERRUPT = microblaze_0_interrupt
  BUS_INTERFACE DLMB = pcp_dlmb
  BUS_INTERFACE ILMB = pcp_ilmb
  PORT MB_RESET = proc_sys_reset_0_MB_Reset
@@ -357,7 +355,6 @@ BEGIN axi_intc
  PARAMETER C_BASEADDR = 0x41200000
  PARAMETER C_HIGHADDR = 0x4120ffff
  BUS_INTERFACE S_AXI = axi4lite_pcp
-# BUS_INTERFACE INTERRUPT = microblaze_0_interrupt
  PORT S_AXI_ACLK = clk_100_0000MHzPLL0
  PORT Irq = pcp_INTERRUPT
  PORT INTR = fit_timer_0_Interrupt & axi_openmac_0_MAC_IRQ & axi_openmac_0_TIMER_IRQ
@@ -369,7 +366,6 @@ BEGIN axi_intc
  PARAMETER C_BASEADDR = 0x41200000
  PARAMETER C_HIGHADDR = 0x4120ffff
  BUS_INTERFACE S_AXI = axi4lite_host
-# BUS_INTERFACE INTERRUPT = host_INTERRUPT
  PORT S_AXI_ACLK = clk_100_0000MHzPLL0
  PORT Irq = host_INTERRUPT
  PORT Intr = axi_hostinterface_0_irqOut_irq & fit_timer_0_Interrupt
