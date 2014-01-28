@@ -1,0 +1,193 @@
+WARNING:EDK:2343 - Search path
+   D:\MY_EXP\Coding\myworks\OpenProjects\MyCodes\axi_ip\rtl\ directly contains
+   pcores directory. Search path should point to a directory two levels above
+   pcores.WARNING:EDK:2343 - Search path
+   D:\MY_EXP\Coding\myworks\OpenProjects\MyCodes\axi_ip\rtl\ directly contains
+   pcores directory. Search path should point to a directory two levels above
+   pcores.
+Checking platform configuration ...
+IPNAME: lmb_v10, INSTANCE: host_ilmb - 1 master(s) : 1 slave(s) 
+IPNAME: lmb_v10, INSTANCE: host_dlmb - 1 master(s) : 1 slave(s) 
+IPNAME: lmb_v10, INSTANCE: pcp_ilmb - 1 master(s) : 1 slave(s) 
+IPNAME: lmb_v10, INSTANCE: pcp_dlmb - 1 master(s) : 1 slave(s) 
+IPNAME: axi_interconnect, INSTANCE: axi4lite_pcp - 1 master(s) : 6 slave(s) 
+IPNAME: axi_interconnect, INSTANCE: axi4lite_host - 1 master(s) : 3 slave(s) 
+IPNAME: axi_interconnect, INSTANCE: axi4_0 - 4 master(s) : 1 slave(s) 
+IPNAME: axi_interconnect, INSTANCE: axi4_host - 2 master(s) : 1 slave(s) 
+
+Checking port drivers...
+WARNING:EDK:4180 - PORT: Interrupt_address_in, CONNECTOR: Interrupt_address_in -
+   No driver found. Port will be driven to GND -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_intc_v1_04_a\dat
+   a\axi_intc_v2_1_0.mpd line 131 
+WARNING:EDK:4180 - PORT: Interrupt_address_in, CONNECTOR: Interrupt_address_in -
+   No driver found. Port will be driven to GND -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_intc_v1_04_a\dat
+   a\axi_intc_v2_1_0.mpd line 131 
+WARNING:EDK:4181 - PORT: Processor_ack_out, CONNECTOR: Processor_ack_out -
+   floating connection -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_intc_v1_04_a\dat
+   a\axi_intc_v2_1_0.mpd line 132 
+WARNING:EDK:4181 - PORT: Processor_ack_out, CONNECTOR: Processor_ack_out -
+   floating connection -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_intc_v1_04_a\dat
+   a\axi_intc_v2_1_0.mpd line 132 
+
+Performing Clock DRCs...
+INFO:EDK:4060 - INSTANCE: axi_openmac_0, PARAMETER: C_iClk100_FREQ_HZ - Did not
+   implement clock DRCs for the parameter. Top-level frequency could not be
+   propagated to this IP. Please make sure that you have specified the frequency
+   of the top-level clock port, and that the clocks are properly connected.
+
+Performing Reset DRCs...
+
+Overriding system level properties...
+INFO:EDK:4130 - IPNAME: lmb_bram_if_cntlr, INSTANCE:host_i_bram_ctrl - tcl is
+   overriding PARAMETER C_MASK value to 0x20200000 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\lmb_bram_if_cntlr_v3
+   _10_c\data\lmb_bram_if_cntlr_v2_1_0.mpd line 92 
+INFO:EDK:4130 - IPNAME: lmb_bram_if_cntlr, INSTANCE:host_d_bram_ctrl - tcl is
+   overriding PARAMETER C_MASK value to 0x20200000 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\lmb_bram_if_cntlr_v3
+   _10_c\data\lmb_bram_if_cntlr_v2_1_0.mpd line 92 
+INFO:EDK:4130 - IPNAME: microblaze, INSTANCE:host - tcl is overriding PARAMETER
+   C_D_AXI value to 1 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\microblaze_v8_50_c\d
+   ata\microblaze_v2_1_0.mpd line 232 
+INFO:EDK:4130 - IPNAME: microblaze, INSTANCE:host - tcl is overriding PARAMETER
+   C_ADDR_TAG_BITS value to 13 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\microblaze_v8_50_c\d
+   ata\microblaze_v2_1_0.mpd line 337 
+INFO:EDK:4130 - IPNAME: microblaze, INSTANCE:host - tcl is overriding PARAMETER
+   C_DCACHE_ADDR_TAG value to 13 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\microblaze_v8_50_c\d
+   ata\microblaze_v2_1_0.mpd line 367 
+INFO:EDK:4130 - IPNAME: microblaze, INSTANCE:host - tcl is overriding PARAMETER
+   C_USE_INTERRUPT value to 1 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\microblaze_v8_50_c\d
+   ata\microblaze_v2_1_0.mpd line 401 
+INFO:EDK:4130 - IPNAME: microblaze, INSTANCE:host - tcl is overriding PARAMETER
+   C_USE_EXT_BRK value to 1 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\microblaze_v8_50_c\d
+   ata\microblaze_v2_1_0.mpd line 402 
+INFO:EDK:4130 - IPNAME: microblaze, INSTANCE:host - tcl is overriding PARAMETER
+   C_USE_EXT_NM_BRK value to 1 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\microblaze_v8_50_c\d
+   ata\microblaze_v2_1_0.mpd line 403 
+INFO:EDK:4130 - IPNAME: lmb_bram_if_cntlr, INSTANCE:pcp_i_bram_ctrl - tcl is
+   overriding PARAMETER C_MASK value to 0x60000000 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\lmb_bram_if_cntlr_v3
+   _10_c\data\lmb_bram_if_cntlr_v2_1_0.mpd line 92 
+INFO:EDK:4130 - IPNAME: lmb_bram_if_cntlr, INSTANCE:pcp_d_bram_ctrl - tcl is
+   overriding PARAMETER C_MASK value to 0x60000000 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\lmb_bram_if_cntlr_v3
+   _10_c\data\lmb_bram_if_cntlr_v2_1_0.mpd line 92 
+INFO:EDK:4130 - IPNAME: microblaze, INSTANCE:pcp - tcl is overriding PARAMETER
+   C_D_AXI value to 1 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\microblaze_v8_50_c\d
+   ata\microblaze_v2_1_0.mpd line 232 
+INFO:EDK:4130 - IPNAME: microblaze, INSTANCE:pcp - tcl is overriding PARAMETER
+   C_ADDR_TAG_BITS value to 13 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\microblaze_v8_50_c\d
+   ata\microblaze_v2_1_0.mpd line 337 
+INFO:EDK:4130 - IPNAME: microblaze, INSTANCE:pcp - tcl is overriding PARAMETER
+   C_DCACHE_ADDR_TAG value to 13 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\microblaze_v8_50_c\d
+   ata\microblaze_v2_1_0.mpd line 367 
+INFO:EDK:4130 - IPNAME: microblaze, INSTANCE:pcp - tcl is overriding PARAMETER
+   C_USE_INTERRUPT value to 1 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\microblaze_v8_50_c\d
+   ata\microblaze_v2_1_0.mpd line 401 
+INFO:EDK:4130 - IPNAME: microblaze, INSTANCE:pcp - tcl is overriding PARAMETER
+   C_USE_EXT_BRK value to 1 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\microblaze_v8_50_c\d
+   ata\microblaze_v2_1_0.mpd line 402 
+INFO:EDK:4130 - IPNAME: microblaze, INSTANCE:pcp - tcl is overriding PARAMETER
+   C_USE_EXT_NM_BRK value to 1 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\microblaze_v8_50_c\d
+   ata\microblaze_v2_1_0.mpd line 403 
+
+INFO: Setting C_RANGE_CHECK = ON for axi_interconnect axi4lite_pcp.
+INFO:EDK:4130 - IPNAME: axi_interconnect, INSTANCE:axi4lite_pcp - tcl is
+   overriding PARAMETER C_RANGE_CHECK value to 1 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_interconnect_v1_
+   06_a\data\axi_interconnect_v2_1_0.mpd line 149 
+
+INFO: Setting C_RANGE_CHECK = ON for axi_interconnect axi4lite_host.
+INFO:EDK:4130 - IPNAME: axi_interconnect, INSTANCE:axi4lite_host - tcl is
+   overriding PARAMETER C_RANGE_CHECK value to 1 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_interconnect_v1_
+   06_a\data\axi_interconnect_v2_1_0.mpd line 149 
+
+INFO: Setting C_RANGE_CHECK = OFF for axi_interconnect axi4_0; no DECERR
+checking will be performed.
+INFO:EDK:4130 - IPNAME: axi_interconnect, INSTANCE:axi4_0 - tcl is overriding
+   PARAMETER C_RANGE_CHECK value to 0 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_interconnect_v1_
+   06_a\data\axi_interconnect_v2_1_0.mpd line 149 
+
+INFO: Setting C_RANGE_CHECK = OFF for axi_interconnect axi4_host; no DECERR
+checking will be performed.
+INFO:EDK:4130 - IPNAME: axi_interconnect, INSTANCE:axi4_host - tcl is overriding
+   PARAMETER C_RANGE_CHECK value to 0 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_interconnect_v1_
+   06_a\data\axi_interconnect_v2_1_0.mpd line 149 
+INFO:EDK:4130 - IPNAME: axi_s6_ddrx, INSTANCE:MCB_DDR3 - tcl is overriding
+   PARAMETER C_MEMCLK_PERIOD value to 3333 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_s6_ddrx_v1_06_a\
+   data\axi_s6_ddrx_v2_1_0.mpd line 121 
+INFO:EDK:4130 - IPNAME: axi_s6_ddrx, INSTANCE:MCB_DDR3 - tcl is overriding
+   PARAMETER C_S2_AXI_REG_EN0 value to 0x0000F -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_s6_ddrx_v1_06_a\
+   data\axi_s6_ddrx_v2_1_0.mpd line 190 
+INFO:EDK:4130 - IPNAME: axi_s6_ddrx, INSTANCE:MCB_DDR3 - tcl is overriding
+   PARAMETER C_S3_AXI_REG_EN0 value to 0x0000F -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_s6_ddrx_v1_06_a\
+   data\axi_s6_ddrx_v2_1_0.mpd line 204 
+INFO:EDK:4130 - IPNAME: axi_s6_ddrx, INSTANCE:MCB_DDR3 - tcl is overriding
+   PARAMETER C_S4_AXI_REG_EN0 value to 0x0000F -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_s6_ddrx_v1_06_a\
+   data\axi_s6_ddrx_v2_1_0.mpd line 218 
+INFO:EDK:4130 - IPNAME: axi_s6_ddrx, INSTANCE:MCB_DDR3 - tcl is overriding
+   PARAMETER C_S5_AXI_REG_EN0 value to 0x0000F -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_s6_ddrx_v1_06_a\
+   data\axi_s6_ddrx_v2_1_0.mpd line 232 
+INFO:EDK:4130 - IPNAME: axi_intc, INSTANCE:pcp_intc - tcl is overriding
+   PARAMETER C_KIND_OF_INTR value to 0b11111111111111111111111111111100 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_intc_v1_04_a\dat
+   a\axi_intc_v2_1_0.mpd line 87 
+INFO:EDK:4130 - IPNAME: axi_intc, INSTANCE:pcp_intc - tcl is overriding
+   PARAMETER C_KIND_OF_EDGE value to 0b11111111111111111111111111111111 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_intc_v1_04_a\dat
+   a\axi_intc_v2_1_0.mpd line 88 
+INFO:EDK:4130 - IPNAME: axi_intc, INSTANCE:pcp_intc - tcl is overriding
+   PARAMETER C_KIND_OF_LVL value to 0b11111111111111111111111111111111 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_intc_v1_04_a\dat
+   a\axi_intc_v2_1_0.mpd line 89 
+INFO:EDK:4130 - IPNAME: axi_intc, INSTANCE:host_intc - tcl is overriding
+   PARAMETER C_KIND_OF_INTR value to 0b11111111111111111111111111111101 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_intc_v1_04_a\dat
+   a\axi_intc_v2_1_0.mpd line 87 
+INFO:EDK:4130 - IPNAME: axi_intc, INSTANCE:host_intc - tcl is overriding
+   PARAMETER C_KIND_OF_EDGE value to 0b11111111111111111111111111111111 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_intc_v1_04_a\dat
+   a\axi_intc_v2_1_0.mpd line 88 
+INFO:EDK:4130 - IPNAME: axi_intc, INSTANCE:host_intc - tcl is overriding
+   PARAMETER C_KIND_OF_LVL value to 0b11111111111111111111111111111111 -
+   C:\Xilinx\14.7\ISE_DS\EDK\hw\XilinxProcessorIPLib\pcores\axi_intc_v1_04_a\dat
+   a\axi_intc_v2_1_0.mpd line 89 
+
+Running system level update procedures...
+
+Running UPDATE Tcl procedures for OPTION SYSLEVEL_UPDATE_PROC...
+Invoking MIG ...
+MIG returned 0
+
+Running system level DRCs...
+
+Performing System level DRCs on properties...
+
+Running DRC Tcl procedures for OPTION SYSLEVEL_DRC_PROC...
+INTC INFO:: Processor_clk not connected. IRQ is generated on AXI clock.
+INTC INFO:: Processor_clk not connected. IRQ is generated on AXI clock.
+Conversion to XML complete.

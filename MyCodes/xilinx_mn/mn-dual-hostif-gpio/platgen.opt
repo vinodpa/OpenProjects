@@ -1,0 +1,15 @@
+-p
+xc6slx150tfgg676-3
+-lang
+vhdl
+-intstyle
+default
+-lp
+D:/gitHub/Powerlink-XilinxMN/openPOWERLINK_systec/hardware/ipcore/xilinx/
+-lp
+D:/Xilinx_MN/MyCodes/xilinx_mn/ipcore/release/xilinx/
+-lp
+D:/MY_EXP/Coding/myworks/OpenProjects/MyCodes/axi_ip/rtl
+-msg
+__xps/ise/xmsgprops.lst
+system.mhs
