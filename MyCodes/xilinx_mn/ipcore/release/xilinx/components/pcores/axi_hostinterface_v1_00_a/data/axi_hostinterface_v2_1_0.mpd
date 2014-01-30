@@ -180,7 +180,7 @@ PORT iNodeId_nodeid = "" , DIR = I, VEC = [7:0], IO_IF = LED
 PORT oPlkLed_lederr = "" , DIR = O, IO_IF = LED
 PORT oPlkLed_ledst = "" , DIR = O, IO_IF = LED
 ## Parallel Interface Signals
-PORT iExtSync_exsync = "", DIR = I, IO_IF = PAP, ISVALID = (gHostIfType == 1)
+#PORT iExtSync_exsync = "", DIR = I, IO_IF = PAP, ISVALID = (gHostIfType == 1)
 PORT iParHost_chipselect = "", DIR = I, IO_IF = PAP, ISVALID = (gHostIfType == 1)
 PORT iParHost_read = "", DIR = I, IO_IF = PAP, ISVALID = (gHostIfType == 1)
 PORT iParHost_write = "", DIR = I, IO_IF = PAP, ISVALID = (gHostIfType == 1)
