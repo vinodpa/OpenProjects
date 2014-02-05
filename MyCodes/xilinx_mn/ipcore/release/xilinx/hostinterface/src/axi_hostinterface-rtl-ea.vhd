@@ -518,6 +518,8 @@ begin
         iRvalid             => M_AXI_RVALID,
         oRready             => M_AXI_RREADY,
         -- Avalon master
+        iAvalonClk          => hostif_clock,
+        iAvalonReset        => hostif_reset,
         iAvalonRead         => avm_hostBridge_read,
         iAvalonWrite        => avm_hostBridge_write,
         iAvalonAddr         => AxiLiteBridgeAddress,

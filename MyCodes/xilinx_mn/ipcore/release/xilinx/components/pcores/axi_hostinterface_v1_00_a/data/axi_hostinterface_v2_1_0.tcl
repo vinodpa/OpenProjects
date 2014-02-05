@@ -262,11 +262,11 @@ proc generate {drv_handle} {
      set mhsinst [xget_hw_parent_handle $drv_handle]
      xdefine_include_file $drv_handle "xparameters.h" "axi_hostinterface" "C_BASEADDR" "C_HIGHADDR" "axi_hostinterface" "C_HOST_BASEADDR" "C_HOST_HIGHADDR" "gBaseDynBuf0" "gBaseDynBuf1" "gBaseErrCntr" "gBaseTxNmtQ" "gBaseTxGenQ" "gBaseTxSynQ" "gBaseTxVetQ" "gBaseRxVetQ" "gBaseK2UQ" "gBaseU2KQ" \
       "gBaseTpdo" "gBaseRpdo" "gBaseRes" "Conv_Size_KB_DynBuf0" "Conv_Size_KB_DynBuf1" "Conv_Size_B_ErrorCounter" "Conv_Size_KB_TxNmtQ" "Conv_Size_KB_TxGenQ" "Conv_Size_KB_TxSynQ" "Conv_Size_KB_TxVetQ" \
-      "Conv_Size_KB_RxVetQ" "Conv_Size_KB_K2UQ" "Conv_Size_KB_U2KQ" "Conv_Size_B_Tpdo" "Conv_Size_B_Rpdo"
+      "Conv_Size_KB_RxVetQ" "Conv_Size_KB_K2UQ" "Conv_Size_KB_U2KQ" "Conv_Size_B_Tpdo" "Conv_Size_B_Rpdo" "gVersionMajor" "gVersionMinor" "gVersionRevision" "gVersionCount"
 
      my_xdefine_include_file $drv_handle "hostiflib-mem.h" "axi_hostinterface" "gBaseDynBuf0" "gBaseDynBuf1" "gBaseErrCntr" "gBaseTxNmtQ" "gBaseTxGenQ" "gBaseTxSynQ" "gBaseTxVetQ" "gBaseRxVetQ" "gBaseK2UQ" "gBaseU2KQ" \
       "gBaseTpdo" "gBaseRpdo" "gBaseRes" "Conv_Size_KB_DynBuf0" "Conv_Size_KB_DynBuf1" "Conv_Size_B_ErrorCounter" "Conv_Size_KB_TxNmtQ" "Conv_Size_KB_TxGenQ" "Conv_Size_KB_TxSynQ" "Conv_Size_KB_TxVetQ" \
-      "Conv_Size_KB_RxVetQ" "Conv_Size_KB_K2UQ" "Conv_Size_KB_U2KQ" "Conv_Size_B_Tpdo" "Conv_Size_B_Rpdo"
+      "Conv_Size_KB_RxVetQ" "Conv_Size_KB_K2UQ" "Conv_Size_KB_U2KQ" "Conv_Size_B_Tpdo" "Conv_Size_B_Rpdo" "gVersionMajor" "gVersionMinor" "gVersionRevision" "gVersionCount"
 
 }
 
@@ -373,7 +373,15 @@ proc my_xget_name {periph_handle param} {
      set name [format "%s%s" "HOSTIF_SIZE_" "TPDO"]
      }  elseif {[string compare $param "Conv_Size_B_Rpdo"] == 0} {
      set name [format "%s%s" "HOSTIF_SIZE_" "RPDO"]
-     } else {
+     }  elseif {[string compare $param "gVersionMajor"] == 0} {
+     set name [format "%s%s" "HOSTIF_" "VERSION_MAJOR"]
+     }  elseif {[string compare $param "gVersionMinor"] == 0} {
+     set name [format "%s%s" "HOSTIF_" "VERSION_MINOR"]
+     }  elseif {[string compare $param "gVersionRevision"] == 0} {
+     set name [format "%s%s" "HOSTIF_" "VERSION_REVISION"]
+     }  elseif {[string compare $param "gVersionCount"] == 0} {
+     set name [format "%s%s" "HOSTIF_" "VERSION_COUNT"]
+     }  else {
      set name [format "%s%s" "HOSTIF_SIZE_" $param]
      }
      return $name
