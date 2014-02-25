@@ -152,12 +152,15 @@ architecture rtl of parallelInterface is
     alias countTc           : std_logic is count(cCountWidth-1);
     signal countEn          : std_logic;
     signal countRst         : std_logic;
-    constant cCountWrAckAct : std_logic_vector(count'range) := "0000";
-    constant cCountWrAckDea : std_logic_vector(count'range) := "0001";
-    constant cCountRdAckAct : std_logic_vector(count'range) := "0001";
-    constant cCountRdAckDea : std_logic_vector(count'range) := "0010";
-    constant cCountRdEnAct  : std_logic_vector(count'range) := "0000";
-    constant cCountRdEnDea  : std_logic_vector(count'range) := "0011";
+    constant cCountWrAckAct : std_logic_vector(count'range) := "0000";--0
+    constant cCountWrAckDea : std_logic_vector(count'range) := "0111";--1
+    constant cCountRdAckAct : std_logic_vector(count'range) := "0010";--1
+    constant cCountRdAckDea : std_logic_vector(count'range) := "0111";--2
+    constant cCountRdEnAct  : std_logic_vector(count'range) := "0000";--0
+    constant cCountRdEnDea  : std_logic_vector(count'range) := "0111";--3
+    
+    --test data
+    signal mydata : std_logic_vector (31 downto 0) := x"DEADBEEF";
 
 begin
 
@@ -205,9 +208,16 @@ begin
         end if;
     end process;
 
+    
+    --tESTS
+    --mydata <= x"0000000" & hostRead & hostChipselect & hostWrite & '0'; 
+    mydata <= x"00000000"; 
     oHostAddress <= addressRegister(15 downto 1);
+    --oHostAddress <= mydata (15 downto 1);
 
     oParHostDataEnable          <= hostDataEnable_reg;
+    --TEST:Vinod for Read enable pin 
+    --oParHostDataEnable          <= cActivated;
     oParHostAddressDataEnable   <= hostDataEnable_reg;
     oParHostAcknowledge         <= hostAck_reg;
 
@@ -236,9 +246,9 @@ begin
                     hostAck <= cActivated;
                 end if;
                 -- activate data output for read
-                if count >= cCountRdEnAct and count <= cCountRdEnDea then
+                --if count >= cCountRdEnAct and count <= cCountRdEnDea then
                     hostDataEnable <= cActivated;
-                end if;
+                --end if;
             elsif hostWrite = cActivated then
                 -- activate ack signal for write
                 if count >= cCountWrAckAct and count <= cCountWrAckDea then
@@ -343,9 +353,14 @@ begin
                 if addressRegister(addressRegister'right) = cActivated then
                     -- upper word is selected
                     readDataRegister_next(i) <= iHostReaddata(cWord+i);
+                    --readDataRegister_next(i) <= mydata(cWord+i);
+                    --readDataRegister_next(i) <= mydata(i);
+                    --readDataRegister_next <= addressRegister;
                 else
                     -- lower word is selected
                     readDataRegister_next(i) <= iHostReaddata(i);
+                    --readDataRegister_next(i) <= mydata(i);
+                    --readDataRegister_next <= addressRegister;
                 end if;
             end loop;
         end process;
