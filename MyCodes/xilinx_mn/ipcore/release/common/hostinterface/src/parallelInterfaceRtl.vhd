@@ -143,7 +143,7 @@ architecture rtl of parallelInterface is
     signal hostAck_reg          : std_logic;
 
     -- fsm
-    type tFsm is (sIdle, sDo, sWait);
+    type tFsm is (sIdle, sDo, sWait,sDone);
     signal fsm : tFsm;
 
     -- timeout
@@ -154,8 +154,10 @@ architecture rtl of parallelInterface is
     signal countRst         : std_logic;
     constant cCountWrAckAct : std_logic_vector(count'range) := "0000";--0
     constant cCountWrAckDea : std_logic_vector(count'range) := "0111";--1
+    --Read should be enabled until the ACK goes low
     constant cCountRdAckAct : std_logic_vector(count'range) := "0010";--1
     constant cCountRdAckDea : std_logic_vector(count'range) := "0111";--2
+    --Read Should enable 
     constant cCountRdEnAct  : std_logic_vector(count'range) := "0000";--0
     constant cCountRdEnDea  : std_logic_vector(count'range) := "0111";--3
     
@@ -246,8 +248,9 @@ begin
                     hostAck <= cActivated;
                 end if;
                 -- activate data output for read
+		--TODO: Cleanup the code
                 --if count >= cCountRdEnAct and count <= cCountRdEnDea then
-                    hostDataEnable <= cActivated;
+                  --hostDataEnable <= cActivated;
                 --end if;
             elsif hostWrite = cActivated then
                 -- activate ack signal for write
@@ -256,6 +259,14 @@ begin
                 end if;
             end if;
         end if;
+        
+        if fsm = sWait or fsm = sDone then
+            if hostRead = cActivated then
+               hostDataEnable <= cActivated;
+                --hostAck <= cActivated;
+            end if;
+        end if;
+        
     end process;
 
     --! Fsm to control access and timeout counter
@@ -309,8 +320,16 @@ begin
                         end if;
                     when sWait =>
                         if countTc = cActivated then
-                            fsm <= sIdle;
+                            --fsm <= sIdle;
+                            fsm <= sDone;
                         end if;
+                    --TODO: Remove this sate only for testing
+                    when sDone =>
+                         if (hostRead =  cInactivated and hostWrite = cInactivated) then
+                            fsm <= sIdle;
+                         else
+                            fsm <= sDone;
+                         end if;
                 end case;
             end if;
         end if;
